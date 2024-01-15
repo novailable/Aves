@@ -1,8 +1,9 @@
 /** @type {import('Aves_SSR/tailwindcss').Config} */
 module.exports = {
-  content: ["/templates/**/*.html", "./static/**/*.js"],
+  content: ["./templates/**/*.html"],
   theme: {
-    extend: {},
+    extend: {
+    },
   },
   plugins: [],
 }

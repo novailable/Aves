@@ -1,6 +1,51 @@
-{% extends "zero.html" %}
-{% block title %} Home {% endblock %}
-{% block content %}
+<!DOCTYPE html>
+{% set logo_path, profiles ="images/", "users_profiles/user1.jpg" %}
+{% set findings = [ 'https://cdn.pixabay.com/photo/2019/09/18/10/39/victoria-crowned-pigeon-4486154_1280.jpg',
+                    'https://cdn.pixabay.com/photo/2018/09/02/15/34/owl-3649048_1280.jpg',
+                    'https://cdn.pixabay.com/photo/2018/05/27/18/19/sparrows-3434123_1280.jpg',
+                    'https://cdn.pixabay.com/photo/2014/05/20/21/25/bird-349035_1280.jpg',
+                    'https://cdn.pixabay.com/photo/2019/01/01/14/10/pompadour-3906740_1280.jpg',
+                    'https://cdn.pixabay.com/photo/2017/03/21/18/46/raven-2162966_1280.jpg']
+%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='output.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <title>Flask Website</title>
+</head>
+<body class="relative">
+<nav class="align-middle flex justify-between">
+    <div class="flex items-center">
+        <a href="/" class="flex items-center">
+            <img src="{{url_for('static', filename=logo_path~'logo.png')}}" alt="Logo" class="w-28 ml-3">
+        </a>
+        <ul class="flex flex-row items-center gap-2 ml-3">
+            <li>
+                <a href="#" class="p-4 py-2 border-2 rounded-md">Home</a>
+            </li>
+            <li>
+                <a href="#" class="p-4 py-2 border-2 rounded-md">Explore</a>
+            </li>
+            <li>
+                <a href="#" class="p-4 py-2 border-2 rounded-md">Map</a>
+            </li>
+        </ul>
+    </div>
+    <div class="flex items-center gap-2 mr-6">
+        <a href="#" class="p-2 py-1 rounded-md bg-gray-700 text-gray-100">Sign In</a>
+        <a href="#" class="p-2 py-1 rounded-md bg-gray-700 text-gray-100">Sign Up</a>
+    </div>
+    <div class="flex items-center gap-2 hidden">
+        <a href="#">
+            <a href="#" class="p-2 py-1 rounded-md bg-gray-700 text-gray-100">Log Out</a>
+            <img src="{{url_for('static', filename=profiles)}}" alt="profile" class="w-14 rounded-full mr-6">
+        </a>
+
+    </div>
+</nav>
+<hr>
 <div class="container mx-auto bg-[url('https://www.freewebheaders.com/wp-content/gallery/birds/awesome-colorful-macaw-bird-website-header.jpg')]
             h-56 w-full rounded-lg grid grid-cols-3">
     <div class="col-span-2 flex flex-col justify-center items-center">
@@ -77,6 +122,8 @@
         </div>
     </div>
 </section>
+
+
 <section class="container w-full mx-auto pb-4">
     <h1 class="py-6 text-2xl font-sans">Your Findings</h1>
     <div class="container grid grid-cols-6 gap-3">
@@ -102,4 +149,9 @@
         {% endfor %}
     </div>
 </section>
-{% endblock %}
+<footer>
+
+</footer>
+</body>
+
+</html>

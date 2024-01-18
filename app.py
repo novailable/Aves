@@ -1,5 +1,5 @@
 from flask import Flask, redirect, request, render_template, url_for
-
+from map import get_user_location
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --watch
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --minify
 
@@ -13,7 +13,9 @@ def index():
 
 @app.route("/map")
 def map():
-    return render_template("map.html")
+    lat, lng = get_user_location()
+    location = {"lat": lat, "lng": lng}
+    return render_template("map.html", location=location)
 
 
 if __name__ == '__main__':

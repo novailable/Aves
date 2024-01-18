@@ -13,6 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ url_for('static', filename='output.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    {% block script %}
+    {% endblock %}
     <title>{% block title %} {% endblock %}</title>
 </head>
 <body class="relative">
@@ -23,13 +25,13 @@
         </a>
         <ul class="flex flex-row items-center gap-2 ml-3">
             <li>
-                <a href="#" class="p-4 py-2 border-2 rounded-md">Home</a>
+                <a href="/" class="p-4 py-2 border-2 rounded-md">Home</a>
             </li>
             <li>
                 <a href="#" class="p-4 py-2 border-2 rounded-md">Explore</a>
             </li>
             <li>
-                <a href="#" class="p-4 py-2 border-2 rounded-md">Map</a>
+                <a href="/map" class="p-4 py-2 border-2 rounded-md">Map</a>
             </li>
         </ul>
     </div>

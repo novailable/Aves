@@ -1,4 +1,5 @@
 {% extends "zero.html" %}
+{% block script %}{%endblock%}
 {% block title %} Home {% endblock %}
 {% block content %}
 <div class="container mx-auto bg-[url('https://www.freewebheaders.com/wp-content/gallery/birds/awesome-colorful-macaw-bird-website-header.jpg')]
@@ -32,8 +33,20 @@
             </button>
         </div>
     </div>
+
+
     <div class="grid grid-rows-8 place-items-center ">
+        <div class="rounded-full w-full">
+            <div class="relative w-full mr-4 rounded-full">
+                <input type="text" class="w-full rounded-full pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-500 transition-shadow" placeholder="Search...">
+                <butto type="submit" class="absolute right-0 top-0 mt-2 mr-2">
+                    <svg class="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                </butto>
+            </div>
+        </div>
+
         <div class="border-dotted border-4 p-6 row-start-2 row-span-7 rounded-xl flex flex-col items-center justify-center w-full">
+
             <div class="w-64 h-64">
                 <!--
                 https://cdn.pixabay.com/photo/2019/09/18/10/39/victoria-crowned-pigeon-4486154_1280.jpg

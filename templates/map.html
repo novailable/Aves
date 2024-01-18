@@ -1,5 +1,30 @@
 {% extends "zero.html" %}
-{% block title %} Home {% endblock %}
-{% block content %}
+{% block script %}
+    <!--<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=console.debug&libraries=maps,marker&v=beta">
+    </script>-->
+    <script>
+          var myData = JSON.parse('{{ location | tojson }}');
+          console.log(myData.lon)
 
+            function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+              zoom: 8, // Initial zoom level
+              center: { lat: myData.lat, lng: myData.lng }, // Initial center coordinates (New York City)
+            });
+            }
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=initMap">
+    </script>
+{% endblock %}
+{% block title %} Map {% endblock %}
+{% block content %}
+<section class="bg-indigo-500">
+    <div class="p-6">
+        <p class="text-5xl">Bird Watching Spots Near You</p>
+        <div class="w-full h-[40rem] bg-gray-700 my-5" id="map">
+        </div>
+    </div>
+</section>
 {% endblock %}

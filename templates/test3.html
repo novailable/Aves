@@ -15,7 +15,7 @@
     </style>
     <script src="./index.js" type="module"></script>
     <script>
-        let map, infoWindow;
+        let map, infoWindow, userMarker;
 
         function getUserLocation() {
             return new Promise((resolve, reject) => {
@@ -40,29 +40,48 @@
 
         async function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
+                zoom: 11,
+                gestureHandling: "cooperative",
             });
             infoWindow = new google.maps.InfoWindow();
 
             try {
                 const userLocation = await getUserLocation();
-                //infoWindow.setPosition(userLocation);
-                //infoWindow.setContent("Location found.");
-                //infoWindow.open(map);
                 map.setCenter(userLocation);
-                placeMarkerAndPanTo(userLocation, map)
+
+                userMarker = placeMarkerAndPanTo(userLocation, map);
+                map.addListener("click", (e) => {
+                    placeMarkerAndPanTo(e.latLng, map);
+                });
+
+                // Add a double-click event listener to delete the marker
+
             } catch (error) {
                 handleLocationError(true, infoWindow, map.getCenter());
             }
         }
 
         function placeMarkerAndPanTo(latLng, map) {
-            new google.maps.Marker({
+            const marker = new google.maps.Marker({
                 position: latLng,
                 map: map,
             });
+
+            marker.addListener("click", () => {
+                map.setZoom(15);
+                map.setCenter(marker.getPosition());
+            });
+
+            let timeoutId;
+            marker.addListener("mousedown", () => {
+                timeoutId = setTimeout(() => {
+                    // This block executes after 3 seconds
+                    marker.setMap(null);
+                }, 1300);
+            });
             map.panTo(latLng);
-}
+            return marker;
+        }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
             infoWindow.setPosition(pos);
@@ -80,13 +99,6 @@
 <body>
 <div id="map"></div>
 
-<!--
-  The `defer` attribute causes the callback to execute after the full HTML
-  document has been parsed. For non-blocking uses, avoiding race conditions,
-  and consistent behavior across browsers, consider loading using Promises.
-  See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
-  for more information.
-  -->
 <script
         defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=initMap&v=weekly"

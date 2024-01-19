@@ -1,4 +1,5 @@
-from flask import Flask, redirect, request, render_template, url_for
+from flask import Flask, render_template
+
 from map import get_user_location, get_nearby_spots
 
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --watch
@@ -14,7 +15,6 @@ def index():
 
 @app.route("/map")
 def map():
-
     user_location = get_user_location()
     print("user<", user_location)
     print(get_nearby_spots(user_location, 10000))

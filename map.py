@@ -1,7 +1,7 @@
 import googlemaps
-from werkzeug.routing import Map
 
 gmaps = googlemaps.Client(key="AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI")
+
 
 def get_user_location():
     # Initialize the Google Maps client
@@ -17,7 +17,7 @@ def get_user_location():
         return None
 
 
-def get_nearby_spots (location, radius=10000, keyword="birdwatching area"):
+def get_nearby_spots(location, radius=10000, keyword="birdwatching area"):
     # Initialize the Google Maps client
 
     try:
@@ -46,6 +46,7 @@ def get_nearby_spots (location, radius=10000, keyword="birdwatching area"):
     except googlemaps.exceptions.ApiError as e:
         print(f"Error: {e}")
         return None
+
 
 if __name__ == '__main__':
     loc = get_user_location()

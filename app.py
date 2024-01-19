@@ -1,5 +1,6 @@
 from flask import Flask, redirect, request, render_template, url_for
-from map import get_user_location
+from map import get_user_location, get_nearby_spots
+
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --watch
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --minify
 
@@ -13,9 +14,14 @@ def index():
 
 @app.route("/map")
 def map():
-    lat, lng = get_user_location()
-    location = {"lat": lat, "lng": lng}
-    return render_template("map.html", location=location)
+
+    user_location = get_user_location()
+    print("user<", user_location)
+    print(get_nearby_spots(user_location, 10000))
+    return render_template("map1.html",
+                           user_location=get_user_location(),
+                           birding_area=get_nearby_spots(location=user_location, radius=10000,
+                                                         keyword="Bird watching area"))
 
 
 if __name__ == '__main__':

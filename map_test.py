@@ -12,7 +12,6 @@ def get_user_location(api_key):
         # Extract relevant information
         latitude = location_data["location"]["lat"]
         longitude = location_data["location"]["lng"]
-
         return latitude, longitude
 
     except googlemaps.exceptions.ApiError as e:
@@ -23,7 +22,7 @@ def get_user_location(api_key):
 def get_nearby_birdwatching_spots(api_key, location, radius=5000, keyword="birdwatching area"):
     # Initialize the Google Maps client
     gmaps = googlemaps.Client(key=api_key)
-
+    print(location)
     try:
         # Search for nearby places with the specified keyword (e.g., "bird watching")
         places_result = gmaps.places_nearby(
@@ -35,6 +34,7 @@ def get_nearby_birdwatching_spots(api_key, location, radius=5000, keyword="birdw
         nearby_spots = []
 
         for place in places_result["results"]:
+            print(place)
             name = place.get("name", "N/A")
             address = place.get("vicinity", "N/A")
             rating = place.get("rating", "N/A")
@@ -61,6 +61,7 @@ api_key = 'AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI'
 
 # Get user's location
 user_location = get_user_location(api_key)
+print(type(user_location))
 
 if user_location:
     print(f"User Location: {user_location}")

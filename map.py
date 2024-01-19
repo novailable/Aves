@@ -1,4 +1,5 @@
 import googlemaps
+from werkzeug.routing import Map
 
 gmaps = googlemaps.Client(key="AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI")
 
@@ -7,33 +8,49 @@ def get_user_location():
     try:
         # Retrieve the user's location based on their IP address
         location_data = gmaps.geolocate()
-
         # Extract relevant information
-        latitude = location_data["location"]["lat"]
-        longitude = location_data["location"]["lng"]
-
-        return latitude, longitude
+        location = location_data.get("location")
+        return location
 
     except googlemaps.exceptions.ApiError as e:
         print(f"Error: {e}")
         return None
 
-def birdwatching_area():
-    lat, lon = get_user_location()
-    user_location = (lat, lon)
 
-    # Fetch birdwatching locations near the user
-    birdwatching_places = gmaps.places_nearby(location=user_location, radius=5000, type="birdwatching")
+def get_nearby_spots (location, radius=10000, keyword="birdwatching area"):
+    # Initialize the Google Maps client
 
-    # Prepare dictionary for template rendering
-    map_data = {
-        "markers": [place["geometry"]["location"] for place in birdwatching_places["results"]],
-        "center": user_location,
-        "zoom_level": 12,
-    }
+    try:
+        # Search for nearby places with the specified keyword (e.g., "bird watching")
+        places_result = gmaps.places_nearby(
+            location=location,
+            radius=radius,
+            keyword=keyword
+        )
+        # Extract relevant information
+        nearby_spots = []
+        for place in places_result["results"]:
+            name = place.get("name", "N/A")
+            address = place.get("vicinity", "N/A")
+            rating = place.get("rating", "N/A")
+            location = place.get("geometry").get("location")
+            nearby_spots.append({
+                "name": name,
+                "address": address,
+                "rating": rating,
+                "location": location
+            })
 
-    return map_data
+        return nearby_spots
+
+    except googlemaps.exceptions.ApiError as e:
+        print(f"Error: {e}")
+        return None
 
 if __name__ == '__main__':
-    lat, lon = get_user_location()
-    print(lat, lon)
+    loc = get_user_location()
+    lat = loc.get("lat")
+    lng = loc.get("lng")
+    map = get_nearby_spots(loc)
+    for m in map:
+        print(m)

@@ -5,7 +5,7 @@
 <div class="container mx-auto bg-[url('https://www.freewebheaders.com/wp-content/gallery/birds/awesome-colorful-macaw-bird-website-header.jpg')]
             h-56 w-full rounded-lg grid grid-cols-3">
     <div class="col-span-2 flex flex-col justify-center items-center">
-        <a href="#" class="text-5xl text-gray-50">Discover Birds with Photo</a>
+        <a class="text-5xl text-gray-50" href="#">Discover Birds with Photo</a>
         <span class="mt-4 text-xl text-gray-50">Find detailed information about various bird species!</span>
     </div>
 </div>
@@ -19,16 +19,23 @@
         <div class="flex flex-col mt-10">
             <div class="rounded-full w-full">
                 <div class="relative w-full mr-4">
-                    <input type="text" class="w-full rounded-full pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-500 transition-shadow" placeholder="Search Bird by Name...">
-                    <button type="submit" class="absolute right-0 top-0 mt-2 mr-2">
-                        <svg class="w-6 h-6 text-gray-900 border-l" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                    <input class="w-full rounded-full pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-500 transition-shadow"
+                           placeholder="Search Bird by Name..."
+                           type="text">
+                    <button class="absolute right-0 top-0 mt-2 mr-2" type="submit">
+                        <svg class="w-6 h-6 text-gray-900 border-l" fill="currentColor" viewBox="0 0 20 20"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd"
+                                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                  fill-rule="evenodd"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
         </div>
         <div class=" py-8 text-3xl flex justify-between">Or use advanced filters
             <button class="bg-gray-900 rounded-md text-gray-50 text-sm p-2.5 py-1">
-               Advanced Filters
+                Advanced Filters
             </button>
         </div>
     </div>
@@ -50,7 +57,8 @@
                 <!--
                 https://cdn.pixabay.com/photo/2019/09/18/10/39/victoria-crowned-pigeon-4486154_1280.jpg
                 {{url_for('static', filename=logo_path~'new_upload.svg')}} -->
-                <img src="{{url_for('static', filename=logo_path~'new_upload.svg')}}" alt="stack-of-photos--v1" class="p-2 w-full h-full object-contain"/>
+                <img alt="stack-of-photos--v1" class="p-2 w-full h-full object-contain"
+                     src="{{url_for('static', filename=logo_path~'new_upload.svg')}}"/>
             </div>
             <button class="text-2xl p-2 mt-10 bg-gray-900 text-gray-50 rounded-lg w-2/5">Upload Image</button>
         </div>
@@ -59,32 +67,50 @@
 <section class="container w-full mx-auto pb-4">
     <h1 class="py-6 text-2xl font-sans">Popular Birds</h1>
     <div class="container grid grid-cols-4 gap-3">
-        <div class="relative h-96" >
-            <img src="https://cdn.pixabay.com/photo/2014/07/08/12/36/bird-386725_1280.jpg" class="rounded-xl drop-shadow h-full w-full object-cover" alt="bird_one">
-            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird Name </div>
+        <div class="relative h-96">
+            <img alt="bird_one"
+                 class="rounded-xl drop-shadow h-full w-full object-cover" src="https://cdn.pixabay.com/photo/2014/07/08/12/36/bird-386725_1280.jpg">
+            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
+                Name
+            </div>
         </div>
         <div class="container grid grid-rows-5 gap-3 h-96">
             <div class="row-span-3 relative">
-                <img src="https://cdn.pixabay.com/photo/2020/04/30/03/26/hummingbird-5111260_1280.jpg" class="rounded-xl drop-shadow w-full h-full object-cover" alt="bird_one">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird Name </div>
+                <img alt="bird_one"
+                     class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2020/04/30/03/26/hummingbird-5111260_1280.jpg">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
+                    Name
+                </div>
             </div>
             <div class="row-span-2 relative">
-                <img src="https://cdn.pixabay.com/photo/2017/11/30/11/57/barn-owl-2988291_1280.jpg" class="rounded-xl drop-shadow h-full w-full object-cover" alt="bird_one">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird Name </div>
+                <img alt="bird_one"
+                     class="rounded-xl drop-shadow h-full w-full object-cover" src="https://cdn.pixabay.com/photo/2017/11/30/11/57/barn-owl-2988291_1280.jpg">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
+                    Name
+                </div>
             </div>
         </div>
         <div class="relative h-96">
-            <img src="https://cdn.pixabay.com/photo/2015/06/21/20/12/peafowl-816981_1280.jpg" class="rounded-xl drop-shadow w-full h-full object-cover" alt="bird_one">
-            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird Name </div>
+            <img alt="bird_one"
+                 class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2015/06/21/20/12/peafowl-816981_1280.jpg">
+            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
+                Name
+            </div>
         </div>
         <div class="container grid grid-rows-5 gap-3 h-96">
             <div class="row-span-2 relative">
-                <img src="https://cdn.pixabay.com/photo/2017/02/28/23/00/swan-2107052_1280.jpg" class="rounded-xl drop-shadow w-full h-full object-cover" alt="bird_one">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird Name </div>
+                <img alt="bird_one"
+                     class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2017/02/28/23/00/swan-2107052_1280.jpg">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
+                    Name
+                </div>
             </div>
             <div class="row-span-3 relative">
-                <img src="https://cdn.pixabay.com/photo/2019/03/28/18/13/bird-4087736_1280.jpg" class="rounded-xl drop-shadow w-full h-full object-cover" alt="bird_one">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird Name </div>
+                <img alt="bird_one"
+                     class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2019/03/28/18/13/bird-4087736_1280.jpg">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
+                    Name
+                </div>
             </div>
         </div>
     </div>
@@ -93,24 +119,24 @@
     <h1 class="py-6 text-2xl font-sans">Your Findings</h1>
     <div class="container grid grid-cols-6 gap-3">
         {% for bird in findings %}
-            <div class="relative h-56 rounded-xl">
-                <img src="{{bird}}" class="rounded-lg drop-shadow w-full h-full object-cover" alt="bird_one">
-                <div class="absolute top-2 right-2 px-2 py-1.5 rounded-md text-xs bg-gray-900 text-gray-50 hover:text-red-500">
-                    <button><i class="fa-solid fa-heart"></i></button>
-                </div>
-                <div class="absolute top-10 right-2 px-2 py-1.5 rounded-md text-xs bg-gray-900 text-gray-50 hover:text-blue-400">
-                    <button><i class="fa-solid fa-share"></i></button>
-                </div>
-                <div class="absolute top-2 left-2 rounded-full bg-gray-900">
-                    <div class="flex items-center h-8 w-8 justify-center text-xs rounded-full bg-gray-900 text-white font-bold text-center">
+        <div class="relative h-56 rounded-xl">
+            <img alt="bird_one" class="rounded-lg drop-shadow w-full h-full object-cover" src="{{bird}}">
+            <div class="absolute top-2 right-2 px-2 py-1.5 rounded-md text-xs bg-gray-900 text-gray-50 hover:text-red-500">
+                <button><i class="fa-solid fa-heart"></i></button>
+            </div>
+            <div class="absolute top-10 right-2 px-2 py-1.5 rounded-md text-xs bg-gray-900 text-gray-50 hover:text-blue-400">
+                <button><i class="fa-solid fa-share"></i></button>
+            </div>
+            <div class="absolute top-2 left-2 rounded-full bg-gray-900">
+                <div class="flex items-center h-8 w-8 justify-center text-xs rounded-full bg-gray-900 text-white font-bold text-center">
                     <span id="number">0</span>
-                    </div>
-                </div>
-                <div class="text-sm py-2 pl-1">
-                    Bird Name<br>
-                    Date:
                 </div>
             </div>
+            <div class="text-sm py-2 pl-1">
+                Bird Name<br>
+                Date:
+            </div>
+        </div>
         {% endfor %}
     </div>
 </section>

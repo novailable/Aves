@@ -1,17 +1,39 @@
 {% extends "zero.html" %}
 {% block script %}
-    <!--<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=console.debug&libraries=maps,marker&v=beta">
-    </script>-->
+<!--<script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=console.debug&libraries=maps,marker&v=beta">
+</script>-->
     <script>
-          var myData = JSON.parse('{{ location | tojson }}');
-          console.log(myData.lon)
+        var user_location = JSON.parse('{{ user_location | tojson }}');
+        var birding_areas = JSON.parse('{{ birding_area | tojson }}');
+        console.log(birding_areas);
 
-            function initMap() {
+        function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
-              zoom: 13, // Initial zoom level
-              center: { lat: myData.lat, lng: myData.lng }, // Initial center coordinates (New York City)
+                zoom: 12,
+                center: user_location,
             });
-            }
+
+            const user_maker = new google.maps.Marker({
+                position: user_location,
+                map: map,
+                title: "Your Location",
+            });
+
+            // Array of locations (replace with your actual data)
+            const locations = birding_areas.map((area) => ({
+                position: area.location,
+                title: area.name,
+            }));
+
+            // Loop through the locations and create markers
+            locations.forEach((location) => {
+                const marker = new google.maps.Marker({
+                    position: location.position,
+                    map: map,
+                    title: location.title,
+                });
+            });
+        }
     </script>
 
     <script async defer
@@ -20,11 +42,13 @@
 {% endblock %}
 {% block title %} Map {% endblock %}
 {% block content %}
-<section class="bg-indigo-500">
+<section class="">
     <div class="p-6">
         <p class="text-5xl">Bird Watching Spots Near You</p>
-        <div class="w-full h-[40rem] bg-gray-700 my-5" id="map">
+        <div class="w-full h-[35rem] bg-gray-700 mt-8 mb-5 rounded-md drop-shadow" id="map">
         </div>
+        <p class="text-2xl"> Your Current Location: {{user_location.lat}}, {{user_location.lng}}</br>Number of bird
+            watching spots: {{birding_area|length}}</p>
     </div>
 </section>
 {% endblock %}

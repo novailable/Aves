@@ -49,38 +49,82 @@
                 const userLocation = await getUserLocation();
                 map.setCenter(userLocation);
 
-                userMarker = placeMarkerAndPanTo(userLocation, map);
+                userMarker = placeMarkerAndPanTo(userLocation, map, {type: "user"});
                 map.addListener("click", (e) => {
-                    placeMarkerAndPanTo(e.latLng, map);
+                    placeMarkerAndPanTo(e.latLng, map, {type: "other"});
                 });
-
-                // Add a double-click event listener to delete the marker
 
             } catch (error) {
                 handleLocationError(true, infoWindow, map.getCenter());
             }
         }
 
-        function placeMarkerAndPanTo(latLng, map) {
+        function placeMarkerAndPanTo(latLng, map, markerOptions = {}) {
+            clicked = false;
             const marker = new google.maps.Marker({
                 position: latLng,
                 map: map,
             });
 
             marker.addListener("click", () => {
-                map.setZoom(15);
-                map.setCenter(marker.getPosition());
+
+                if (!clicked) {
+                    // Zoom in on the first click
+                    map.setZoom(15);
+                    map.setCenter(marker.getPosition());
+                    clicked = true;
+                } else {
+                    // Check if routeRenderer exists before setting it to null
+                    if (marker.routeRenderer) {
+                        marker.routeRenderer.setMap(null);
+                        marker.routeRenderer = null;
+                    }
+                    // Check if the marker is not the userMarker
+                    else if (marker !== userMarker) {
+                        marker.routeRenderer = calculateAndDisplayRoute(userMarker.getPosition(), marker.getPosition());
+                    }
+                }
             });
 
             let timeoutId;
             marker.addListener("mousedown", () => {
                 timeoutId = setTimeout(() => {
                     // This block executes after 3 seconds
-                    marker.setMap(null);
+                    if (markerOptions.type !== "user") {
+                        marker.setMap(null);
+                        if (marker.routeRenderer) {
+                            marker.routeRenderer.setMap(null);
+                        }
+                        clearTimeout(timeoutId);
+                    }
                 }, 1300);
             });
+
+            marker.addListener("mouseup", () => {
+                clearTimeout(timeoutId);
+            });
+
             map.panTo(latLng);
             return marker;
+        }
+
+        function calculateAndDisplayRoute(origin, destination) {
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true,});
+
+            directionsService.route({
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING,
+            }, (response, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setMap(map);
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+            return directionsRenderer
         }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {

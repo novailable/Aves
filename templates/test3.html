@@ -13,9 +13,8 @@
             padding: 0;
         }
     </style>
-    <script src="./index.js" type="module"></script>
     <script>
-        let map, infoWindow, userMarker;
+        let map, infoWindow, userMarker, userLocation;
 
         function getUserLocation() {
             return new Promise((resolve, reject) => {
@@ -46,41 +45,94 @@
             infoWindow = new google.maps.InfoWindow();
 
             try {
-                const userLocation = await getUserLocation();
+                userLocation = await getUserLocation();
                 map.setCenter(userLocation);
 
-                userMarker = placeMarkerAndPanTo(userLocation, map);
+                userMarker = placeMarkerAndPanTo(userLocation, map, {type: "user"});
                 map.addListener("click", (e) => {
-                    placeMarkerAndPanTo(e.latLng, map);
+                    placeMarkerAndPanTo(e.latLng, map, {type: "other"});
                 });
 
-                // Add a double-click event listener to delete the marker
-
-            } catch (error) {
+            }
+            catch (error) {
                 handleLocationError(true, infoWindow, map.getCenter());
             }
+           try {
+                const birdingArea = await nearbySearch(userLocation, '10000', 'birdwatching area');
+                addPlaces(birdingArea, map);
+            } catch (error) {
+                console.error("Error in nearbySearch:", error);
+            }
+
         }
 
-        function placeMarkerAndPanTo(latLng, map) {
+        function placeMarkerAndPanTo(latLng, map, markerOptions = {}) {
+            clicked = false;
             const marker = new google.maps.Marker({
                 position: latLng,
                 map: map,
             });
 
             marker.addListener("click", () => {
-                map.setZoom(15);
-                map.setCenter(marker.getPosition());
+
+               if (!clicked) {
+                   // Zoom in on the first click
+                   map.setZoom(15);
+                   map.setCenter(marker.getPosition());
+                   clicked = true;
+               }
+               else {
+                   // Check if routeRenderer exists before setting it to null
+                   if (marker.routeRenderer) {
+                       marker.routeRenderer.setMap(null);
+                       marker.routeRenderer = null;
+                   }
+                   // Check if the marker is not the userMarker
+                   else if (marker !== userMarker) {
+                       marker.routeRenderer = calculateAndDisplayRoute(userMarker.getPosition(), marker.getPosition());
+                   }
+               }
             });
 
             let timeoutId;
             marker.addListener("mousedown", () => {
                 timeoutId = setTimeout(() => {
                     // This block executes after 3 seconds
-                    marker.setMap(null);
+                    if (markerOptions.type !== "user") {
+                        marker.setMap(null);
+                        if (marker.routeRenderer) {
+                            marker.routeRenderer.setMap(null);
+                        }
+                        clearTimeout(timeoutId);
+                    }
                 }, 1300);
             });
+
+            marker.addListener("mouseup", () => {
+                clearTimeout(timeoutId);
+            });
+
             map.panTo(latLng);
             return marker;
+        }
+
+        function calculateAndDisplayRoute(origin, destination) {
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true,});
+
+            directionsService.route({
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING,
+            }, (response, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setMap(map);
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert('Directions request failed due to ' + status);
+                }
+            });
+            return directionsRenderer
         }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -93,6 +145,50 @@
             infoWindow.open(map);
         }
 
+        function nearbySearch(location, radius, type) {
+            return new Promise((resolve, reject) => {
+                const service = new google.maps.places.PlacesService(map);
+                var request = {
+                    location: location,
+                    radius: radius,
+                    type: [type]
+                };
+                service.nearbySearch(request, (results, status) => {
+                        if (status === "OK") {
+                            resolve(results);
+                        } else {
+                            reject(new Error(`Nearby search failed with status: ${status}`));
+                        }
+                    }
+                );
+            });
+        }
+
+        function addPlaces(places, map) {
+            for (const place of places) {
+                if (place.geometry && place.geometry.location) {
+                    const image = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25),
+                    };
+
+                    placeMarkerAndPanTo(place.geometry.location, map, {type: "other"})
+                    /*new google.maps.Marker({
+                        map,
+                        icon: image,
+                        title: place.name,
+                        position: place.geometry.location,
+                    });*/
+
+                }
+            }
+            map.panTo(place.geometry.location);
+
+        }
+
         window.initMap = initMap;
     </script>
 </head>
@@ -101,7 +197,7 @@
 
 <script
         defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=initMap&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=initMap&libraries=places&v=weekly"
 ></script>
 </body>
 </html>

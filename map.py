@@ -28,6 +28,7 @@ def get_nearby_spots(location, radius=10000, keyword="birdwatching area"):
             keyword=keyword
         )
         # Extract relevant information
+        print(places_result)
         nearby_spots = []
         for place in places_result["results"]:
             name = place.get("name", "N/A")
@@ -41,7 +42,7 @@ def get_nearby_spots(location, radius=10000, keyword="birdwatching area"):
                 "location": location
             })
 
-        return nearby_spots
+        return places_result
 
     except googlemaps.exceptions.ApiError as e:
         print(f"Error: {e}")

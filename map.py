@@ -17,7 +17,7 @@ def get_user_location():
         return None
 
 
-def get_nearby_spots(location, radius=10000, keyword="birdwatching area"):
+def get_nearby_spots(location, radius, keyword="birdwatching area"):
     # Initialize the Google Maps client
 
     try:

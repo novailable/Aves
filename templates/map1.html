@@ -5,9 +5,10 @@
 <script>
     let map, infoWindow;
 
-    async function initMap() {
 
-        console.log("libaray")
+    window.initMap = initMap;
+
+    async function initMap() {
 
         map = new google.maps.Map(document.getElementById("map"), {
             zoom: 11,
@@ -18,13 +19,15 @@
 
         try {
             userLocation = await getUserLocation();
-            //userLocation = ['1', '2']
-            const writeLocation = document.getElementById("user_location");
-            writeLocation.innerHTML = `Your Current Location: ${userLocation.lat}, ${userLocation.lng} </br> Number bird watching spots:`;
+            userLocBtn(map);
             map.setCenter(userLocation);
-            userMarker = placeMarkerAndPanTo(userLocation, map, { type: "user" }, "Your Location", "./static/images/user_loc_icon1.png");
+            userMarker = await placeMarkerAndPanTo(userLocation, map, { type: "user" }, "Your Location", "./static/images/user_loc_icon1.png");
             const response = await sendVariableToPython("/birding_area", "userLocation", userLocation);
-            addPlaces(response.birding_area.results, map)
+            const results = response.birding_area.results
+            const writeLocation = document.getElementById("user_location");
+            writeLocation.innerHTML = `Your current location: Lat ${userLocation.lat.toFixed(4)}, Lng ${userLocation.lng.toFixed(4)}
+            </br>Nearby bird watching spots: ${results.length}`;
+            addPlaces(results, map)
 
             map.addListener("click", (e) => {
                 placeMarkerAndPanTo(
@@ -35,7 +38,7 @@
 
             });
 
-            userLocBtn(map)
+
 
             // Fetch birding area data after initial rendering
 
@@ -92,6 +95,7 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
 
          */
     }
+
     function getUserLocation() {
         return new Promise((resolve, reject) => {
             if (navigator.geolocation) {
@@ -141,7 +145,7 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
 
         const userLocBtn = document.createElement("button");
         userLocBtn.classList.add("flex", "items-center", "justify-center", "drop-shadow", "focus:outline-none",
-             "mr-3", "bg-[url('/static/images/locator_icon.png')]", "w-10", "h-10", "cursor-pointer",
+             "mr-2.5", "bg-[url('/static/images/locator_icon.png')]", "w-10", "h-10", "cursor-pointer",
             "hover:bg-[url('/static/images/locator_hov_icon.png')]", "focus:ring", "focus:ring-opacity-25",
             "bg-cover", "bg-white");
 
@@ -241,7 +245,7 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
             destination: destination, // Ensure destination is a LatLng object
             travelMode: google.maps.TravelMode.TRANSIT,
             transitOptions: {
-                routingPreference: 'FEWER_TRANSFERS'
+                routingPreference: 'LESS_WALKING'
             },
         }, (response, status) => {
             if (status === 'OK') {
@@ -281,9 +285,6 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
         }
      }
 
-    window.initMap = initMap;
-
-
 </script>
 
 <script defer
@@ -294,9 +295,9 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
 <section class="">
     <div class="p-6">
         <p class="text-5xl">Bird Watching Spots Near You</p>
-        <div class="w-full h-[35rem] bg-gray-700 mt-8 mb-5 rounded-md drop-shadow" id="map">
+        <div class="w-full h-[34rem] bg-gray-700 mt-8 mb-3 rounded-md drop-shadow" id="map">
         </div>
-        <p class="text-2xl" id="user_location"></p>
+        <p class="text-xl" id="user_location"></p>
     </div>
 </section>
 {% endblock %}

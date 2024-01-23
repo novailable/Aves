@@ -590,6 +590,10 @@ video {
   position: relative;
 }
 
+.inset-0 {
+  inset: 0px;
+}
+
 .bottom-0 {
   bottom: 0px;
 }
@@ -664,6 +668,14 @@ video {
 
 .m-4 {
   margin: 1rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+
+.m-2\.5 {
+  margin: 0.625rem;
 }
 
 .mx-auto {
@@ -875,6 +887,21 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.rotate-45 {
+  --tw-rotate: 45deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.rotate-90 {
+  --tw-rotate: 90deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.rotate-180 {
+  --tw-rotate: 180deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
@@ -991,6 +1018,14 @@ video {
   border-left-width: 1px;
 }
 
+.border-l-2 {
+  border-left-width: 2px;
+}
+
+.border-t-2 {
+  border-top-width: 2px;
+}
+
 .border-dotted {
   border-style: dotted;
 }
@@ -1020,6 +1055,10 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.bg-\[color\] {
+  background-color: color;
+}
+
 .bg-\[url\(\'https\:\/\/www\.freewebheaders\.com\/wp-content\/gallery\/birds\/awesome-colorful-macaw-bird-website-header\.jpg\'\)\] {
   background-image: url('https://www.freewebheaders.com/wp-content/gallery/birds/awesome-colorful-macaw-bird-website-header.jpg');
 }
@@ -1036,8 +1075,32 @@ video {
   background-image: url('/static/images/locator_icon.png');
 }
 
+.bg-\[url\(\'\/static\/images\/marker_remover\.png\'\)\] {
+  background-image: url('/static/images/marker_remover.png');
+}
+
 .bg-cover {
   background-size: cover;
+}
+
+.fill-current {
+  fill: currentColor;
+}
+
+.stroke-gray-900 {
+  stroke: #111827;
+}
+
+.stroke-2 {
+  stroke-width: 2;
+}
+
+.stroke-\[10\] {
+  stroke-width: 10;
+}
+
+.stroke-\[10px\] {
+  stroke-width: 10px;
 }
 
 .object-contain {
@@ -1241,6 +1304,10 @@ video {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .transition-shadow {
   transition-property: box-shadow;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -1262,6 +1329,18 @@ video {
 
 .hover\:bg-\[url\(\'\/static\/images\/locator_hov_icon\.png\'\)\]:hover {
   background-image: url('/static/images/locator_hov_icon.png');
+}
+
+.hover\:bg-\[url\(\'\/static\/images\/marker_hov_remover\.png\'\)\]:hover {
+  background-image: url('/static/images/marker_hov_remover.png');
+}
+
+.hover\:bg-\[url\(\'\/static\/images\/logo\.png\'\)\]:hover {
+  background-image: url('/static/images/logo.png');
+}
+
+.hover\:stroke-red-500:hover {
+  stroke: #ef4444;
 }
 
 .hover\:text-blue-400:hover {

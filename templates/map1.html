@@ -2,9 +2,12 @@
 {% block script %}
 <!--<script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=console.debug&libraries=maps,marker&v=beta">
 </script>-->
-<script>
-    let map, infoWindow;
 
+<script defer
+        src="https://maps.googleapis.com/maps/api/js?key={{API}}&callback=initMap&v=weekly"></script>
+<script>
+    let map, infoWindow, AdvancedMarkerElement, PinElement;
+    markersArray = [];
 
     window.initMap = initMap;
 
@@ -13,15 +16,18 @@
         map = new google.maps.Map(document.getElementById("map"), {
             zoom: 11,
             gestureHandling: "cooperative",
-            mapId: '16d8ab4a81eec419'
+            mapId: '{{map_id}}'
         });
+
         infoWindow = new google.maps.InfoWindow();
+        ({AdvancedMarkerElement, PinElement} = await google.maps.importLibrary("marker"));
 
         try {
             userLocation = await getUserLocation();
             userLocBtn(map);
+            markerDelBtn(map);
             map.setCenter(userLocation);
-            userMarker = await placeMarkerAndPanTo(userLocation, map, { type: "user" }, "Your Location", "./static/images/user_loc_icon1.png");
+            userMarker = await placeMarkerAndPanTo(userLocation, map, "user", "Your Location", "./static/images/user_loc_icon1.png");
             const response = await sendVariableToPython("/birding_area", "userLocation", userLocation);
             const results = response.birding_area.results
             const writeLocation = document.getElementById("user_location");
@@ -33,7 +39,7 @@
                 placeMarkerAndPanTo(
                     e.latLng,
                     map,
-                    { type: "other" },
+                    "other",
                     `${e.latLng.lat().toFixed(4)}, ${e.latLng.lng().toFixed(4)}`);
 
             });
@@ -160,10 +166,49 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
         });
     }
 
-    async function placeMarkerAndPanTo(location, map, markerOptions = {}, title, img_url="./static/images/default_loc_icon.png") {
-        clicked = false;
+    function markerDelBtn(map) {
+        // Create the control elements
 
-        const {AdvancedMarkerElement, PinElement} = await google.maps.importLibrary("marker");
+        const markerDelBtn = document.createElement("button");
+        markerDelBtn.classList.add("flex",
+          "items-center",
+          "justify-center",
+          "drop-shadow",
+          "focus:outline-none",
+          "m-2.5",
+          "bg-[url('/static/images/marker_remover.png')]",
+          "w-10",
+          "h-10",
+          "cursor-pointer",
+          "hover:bg-[url('/static/images/marker_hov_remover.png')]",
+          "focus:ring",
+          "focus:ring-opacity-25",
+          "bg-cover",
+          "bg-white"
+        );
+
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(markerDelBtn);
+
+        // Add the event listener to the button
+        markerDelBtn.addEventListener("click", () => {
+            delOtherMarker();
+        });
+    }
+
+    function delOtherMarker() {
+        try{
+            markersArray.forEach((marker) => {
+                delMarkerRoute(marker);
+            });
+            markersArray = [];
+        }catch (error)
+        {
+            console.log(error)
+        }
+    }
+    function placeMarkerAndPanTo(location, map, type, title, img_url="./static/images/default_loc_icon.png") {
+
+        clicked = false;
 
         const labelElement = document.createElement("p");
         labelElement.textContent = title;
@@ -200,8 +245,14 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
             position: location,
             content: glyphSvgPinElement.element,
             title: title,
-            gmpDraggable: markerOptions.type === "other"
+            gmpDraggable: type === "other"
         });
+
+
+        advMarker.type = type;
+        if (advMarker.type === "other"){
+            markersArray.push(advMarker);
+        }
 
         advMarker.addListener("click", () => {
 
@@ -218,28 +269,34 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
                    advMarker.routeRenderer = null;
                }
                // Check if the marker is not the userMarker
-               else if (advMarker !== userMarker) {
-                   advMarker.routeRenderer = calculateAndDisplayRoute(userLocation, location);
+               else if (advMarker !== userMarker){
+                   advMarker.routeRenderer = calculateAndDisplayRoute(userLocation, advMarker);
                }
            }
         });
 
-            advMarker.addListener("dragend", () => {
-                if (markerOptions.type === "other") {
-                    advMarker.setMap(null);
-                    if (advMarker.routeRenderer) {
-                        advMarker.routeRenderer.setMap(null);
-                    }
-                }
-            });
+
+        advMarker.addListener("dragend", () => {
+            if (advMarker.type === "other") {
+                delMarkerRoute(advMarker)
+            }
+        });
         //map.panTo(location);
         return advMarker;
     }
 
-    function calculateAndDisplayRoute(origin, destination) {
+    function delMarkerRoute(marker){
+        marker.setMap(null);
+        if (marker.routeRenderer) {
+            marker.routeRenderer.setMap(null);
+        }
+    }
+
+    function calculateAndDisplayRoute(origin, destMarker) {
+        const destination = destMarker.position;
         const directionsService = new google.maps.DirectionsService();
         const directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true,});
-
+        console.log(destination)
         directionsService.route({
             origin: origin, // Ensure origin is a LatLng object
             destination: destination, // Ensure destination is a LatLng object
@@ -251,8 +308,13 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
             if (status === 'OK') {
                 directionsRenderer.setMap(map);
                 directionsRenderer.setDirections(response);
-            } else {
-                window.alert('Directions request failed due to ' + status);
+            }
+            else{
+                infoWindow.open(map, destMarker)
+                infoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -30)});
+                infoWindow.setContent("Currently, there isn't a route available!")
+                map.setCenter(destination)
+                map.setZoom(15)
             }
         });
         return directionsRenderer
@@ -268,12 +330,12 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
         infoWindow.open(map);
     }
 
-     function addPlaces(places, map) {
+    function addPlaces(places, map) {
         for (const place of places) {
             if (place.geometry && place.geometry.location) {
-                console.log(place)
+                //console.log(place)
                 placeMarkerAndPanTo(
-                    place.geometry.location, map, {type: "birding"}, place.name, place.icon)
+                    place.geometry.location, map, "birding", place.name, place.icon)
                 /*new google.maps.Marker({
                     map,
                     icon: image,
@@ -286,9 +348,6 @@ labelContainer.appendChild(labelElement); // Append label after image for layeri
      }
 
 </script>
-
-<script defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=initMap&v=weekly"></script>
 {% endblock %}
 {% block title %} Map {% endblock %}
 {% block content %}

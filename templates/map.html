@@ -2,53 +2,363 @@
 {% block script %}
 <!--<script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=console.debug&libraries=maps,marker&v=beta">
 </script>-->
-    <script>
-        var user_location = JSON.parse('{{ user_location | tojson }}');
-        var birding_areas = JSON.parse('{{ birding_area | tojson }}');
-        console.log(birding_areas);
 
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
-                center: user_location,
+<script defer
+        src="https://maps.googleapis.com/maps/api/js?key={{API}}&callback=initMap&v=weekly"></script>
+<script>
+
+    let map, infoWindow, AdvancedMarkerElement, PinElement;
+    markersArray = [];
+
+    window.initMap = initMap;
+
+    async function initMap() {
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 11,
+            gestureHandling: "cooperative",
+            mapId: '{{map_id}}'
+        });
+
+        infoWindow = new google.maps.InfoWindow();
+        ({AdvancedMarkerElement, PinElement} = await google.maps.importLibrary("marker"));
+
+        try {
+            userLocation = await getUserLocation();
+            userLocBtn(map);
+            markerDelBtn(map);
+            map.setCenter(userLocation);
+            userMarker = await placeMarkerAndPanTo(userLocation, map, "user", "Your Location", "./static/images/user_loc_icon1.png");
+            const response = await sendVariableToPython("/birding_area", "userLocation", userLocation);
+            const results = response.birding_area.results
+            const writeLocation = document.getElementById("user_location");
+            writeLocation.innerHTML = `Your current location: Lat ${userLocation.lat.toFixed(4)}, Lng ${userLocation.lng.toFixed(4)}
+            </br>Nearby bird watching spots: ${results.length}`;
+            addPlaces(results, map)
+
+            map.addListener("click", (e) => {
+                placeMarkerAndPanTo(
+                    e.latLng,
+                    map,
+                    "other",
+                    `${e.latLng.lat().toFixed(4)}, ${e.latLng.lng().toFixed(4)}`);
+
             });
 
-            const user_maker = new google.maps.Marker({
-                position: user_location,
-                map: map,
-                title: "Your Location",
+
+
+            // Fetch birding area data after initial rendering
+
+
+            //addPlaces(response, map)
+            // Add the birding areas to the map
+            //addPlaces(response.birding_area, map); // Assuming the response structure is correct
+            } catch (error) {
+                handleLocationError(true, infoWindow, map.getCenter());
+            }
+
+
+        //console.log(response.birding_area.results)
+        /*for (const place of response.birding_area.results) {
+            console.log(place)
+            if (place.geometry && place.geometry.location) {
+                placeMarkerAndPanTo(
+                    place.geometry.location, map, {type: "other"}, place.name, place.icon)
+            }
+
+        }*/
+            //addPlaces(response.birding_area.results)
+        /*const imageElement = document.createElement("img");
+            imageElement.src = "./static/images/user_loc_icon.png";
+            imageElement.classList.add("w-6", "h-6");
+
+            // Create the label element
+            const labelElement = document.createElement("p");
+            labelElement.textContent = "Your Location";
+            labelElement.classList.add("text-sm", "absolute", "-top-5", "left", "text-center", "whitespace-nowrap"); // Adjust Tailwind classes as needed
+
+            // Create a container to hold both elements
+            const labelContainer = document.createElement("div");
+            labelContainer.classList.add("relative", "flex", "items-center", "justify-center");
+
+// Position the label outside the marker using absolute positioning
+
+// Add elements to the container
+labelContainer.appendChild(imageElement);
+labelContainer.appendChild(labelElement); // Append label after image for layering
+
+
+            const glyphSvgPinElement = new PinElement({
+                glyph: labelContainer,
+            });
+            // Use the container as the marker content
+            const glyphSvgMarkerView = new AdvancedMarkerElement({
+                map,
+                position: userLocation,
+                content: glyphSvgPinElement.element,
+                title: "A marker with an image and label.",
+            });
+    }
+
+         */
+    }
+
+    function getUserLocation() {
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+
+                        };
+                        resolve(userLocation);
+                    },
+                    (error) => {
+                        reject(error);
+                    },
+                );
+            } else {
+                reject(new Error("Geolocation is not supported by this browser."));
+            }
+        });
+    }
+
+    async function sendVariableToPython(route, variableName, variableValue) {
+        try {
+            const response = await fetch(route, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ [variableName]: variableValue }),
+
             });
 
-            // Array of locations (replace with your actual data)
-            const locations = birding_areas.map((area) => ({
-                position: area.location,
-                title: area.name,
-            }));
 
-            // Loop through the locations and create markers
-            locations.forEach((location) => {
-                const marker = new google.maps.Marker({
-                    position: location.position,
-                    map: map,
-                    title: location.title,
-                });
-            });
+            const data = await response.json();  // Parse JSON response
+            //console.log(data);
+            return data
         }
-    </script>
+        catch (error) {
+            console.error("Error fetching data:", error);
 
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI&callback=initMap">
-    </script>
+        }
+    }
+
+    function userLocBtn(map) {
+        // Create the control elements
+
+        const userLocBtn = document.createElement("button");
+        userLocBtn.classList.add("flex", "items-center", "justify-center", "drop-shadow", "focus:outline-none",
+             "mr-2.5", "bg-[url('/static/images/locator_icon.png')]", "w-10", "h-10", "cursor-pointer",
+            "hover:bg-[url('/static/images/locator_hov_icon.png')]", "focus:ring", "focus:ring-opacity-25",
+            "bg-cover", "bg-white");
+
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(userLocBtn);
+
+        // Add the event listener to the button
+        userLocBtn.addEventListener("click", () => {
+            if (userLocation) {
+                map.setCenter(userLocation)
+                map.setZoom(15)
+            }
+        });
+    }
+
+    function markerDelBtn(map) {
+        // Create the control elements
+
+        const markerDelBtn = document.createElement("button");
+        markerDelBtn.classList.add("flex",
+          "items-center",
+          "justify-center",
+          "drop-shadow",
+          "focus:outline-none",
+          "m-2.5",
+          "bg-[url('/static/images/marker_remover.png')]",
+          "w-10",
+          "h-10",
+          "cursor-pointer",
+          "hover:bg-[url('/static/images/marker_hov_remover.png')]",
+          "focus:ring",
+          "focus:ring-opacity-25",
+          "bg-cover",
+          "bg-white"
+        );
+
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(markerDelBtn);
+
+        // Add the event listener to the button
+        markerDelBtn.addEventListener("click", () => {
+            delOtherMarker();
+        });
+    }
+
+    function delOtherMarker() {
+        try{
+            markersArray.forEach((marker) => {
+                delMarkerRoute(marker);
+            });
+            markersArray = [];
+        }catch (error)
+        {
+            console.log(error)
+        }
+    }
+
+    function placeMarkerAndPanTo(location, map, type, title, img_url="./static/images/default_loc_icon.png") {
+
+        clicked = false;
+
+        const labelElement = document.createElement("p");
+        labelElement.textContent = title;
+        labelElement.classList.add("text-sm", "absolute", "-top-5", "left", "text-center", "whitespace-nowrap"); // Adjust Tailwind classes as needed
+
+        const imageElement = document.createElement("img");
+        imageElement.src = img_url;
+        imageElement.classList.add("w-5", "h-5");
+
+        const labelContainer = document.createElement("div");
+        labelContainer.classList.add("relative", "flex", "items-center", "justify-center");
+        labelContainer.appendChild(labelElement);
+        labelContainer.appendChild(imageElement);
+
+
+        // Create a container to hold both elements
+
+        // Add elements to the container
+        //labelContainer.appendChild(imageElement);
+         // Append label after image for layering
+
+        // Create the label element
+
+
+
+        const glyphSvgPinElement = new PinElement({
+            background: "white",
+            glyph: labelContainer,
+            borderColor: "black",});
+
+        // Use the container as the marker content
+        const advMarker = new AdvancedMarkerElement({
+            map,
+            position: location,
+            content: glyphSvgPinElement.element,
+            title: title,
+            gmpDraggable: type === "other"
+        });
+
+
+        advMarker.type = type;
+        if (advMarker.type === "other"){
+            markersArray.push(advMarker);
+        }
+
+        advMarker.addListener("click", () => {
+
+           if (!clicked) {
+               // Zoom in on the first click
+               map.setZoom(15);
+               map.setCenter(advMarker.position);
+               clicked = true;
+           }
+           else {
+               // Check if routeRenderer exists before setting it to null
+               if (advMarker.routeRenderer) {
+                   advMarker.routeRenderer.setMap(null);
+                   advMarker.routeRenderer = null;
+               }
+               // Check if the marker is not the userMarker
+               else if (advMarker !== userMarker){
+                   advMarker.routeRenderer = calculateAndDisplayRoute(userLocation, advMarker);
+               }
+           }
+        });
+
+
+        advMarker.addListener("dragend", () => {
+            if (advMarker.type === "other") {
+                delMarkerRoute(advMarker)
+            }
+        });
+        //map.panTo(location);
+        return advMarker;
+    }
+
+    function delMarkerRoute(marker){
+        marker.setMap(null);
+        if (marker.routeRenderer) {
+            marker.routeRenderer.setMap(null);
+        }
+    }
+
+    function calculateAndDisplayRoute(origin, destMarker) {
+        const destination = destMarker.position;
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true,});
+        console.log(destination)
+        directionsService.route({
+            origin: origin, // Ensure origin is a LatLng object
+            destination: destination, // Ensure destination is a LatLng object
+            travelMode: google.maps.TravelMode.TRANSIT,
+            transitOptions: {
+                routingPreference: 'LESS_WALKING'
+            },
+        }, (response, status) => {
+            if (status === 'OK') {
+                directionsRenderer.setMap(map);
+                directionsRenderer.setDirections(response);
+            }
+            else{
+                infoWindow.open(map, destMarker)
+                infoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -30)});
+                infoWindow.setContent("Currently, there isn't a route available!")
+                map.setCenter(destination)
+                map.setZoom(15)
+            }
+        });
+        return directionsRenderer
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(
+            browserHasGeolocation
+                ? "Error: The Geolocation service failed."
+                : "Error: Your browser doesn't support geolocation.",
+        );
+        infoWindow.open(map);
+    }
+
+    function addPlaces(places, map) {
+        for (const place of places) {
+            if (place.geometry && place.geometry.location) {
+                //console.log(place)
+                placeMarkerAndPanTo(
+                    place.geometry.location, map, "birding", place.name, place.icon)
+                /*new google.maps.Marker({
+                    map,
+                    icon: image,
+                    title: place.name,
+                    position: place.geometry.location,
+                });*/
+
+            }
+        }
+     }
+
+</script>
 {% endblock %}
 {% block title %} Map {% endblock %}
 {% block content %}
 <section class="">
     <div class="p-6">
         <p class="text-5xl">Bird Watching Spots Near You</p>
-        <div class="w-full h-[35rem] bg-gray-700 mt-8 mb-5 rounded-md drop-shadow" id="map">
+        <div class="w-full h-[34rem] bg-gray-700 mt-8 mb-3 rounded-md drop-shadow" id="map">
         </div>
-        <p class="text-2xl"> Your Current Location: {{user_location.lat}}, {{user_location.lng}}</br>Number of bird
-            watching spots: {{birding_area|length}}</p>
+        <p class="text-xl" id="user_location"></p>
     </div>
 </section>
 {% endblock %}

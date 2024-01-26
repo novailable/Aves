@@ -2,7 +2,7 @@ import googlemaps
 
 
 
-def get_user_location():
+"""def get_user_location():
     # Initialize the Google Maps client
     try:
         # Retrieve the user's location based on their IP address
@@ -13,7 +13,7 @@ def get_user_location():
 
     except googlemaps.exceptions.ApiError as e:
         print(f"Error: {e}")
-        return None
+        return None"""
 
 class geo_map():
 

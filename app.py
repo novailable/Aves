@@ -6,7 +6,7 @@ from map import geo_map
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --minify
 
 app = Flask(__name__)
-
+print("ASDF")
 print("Changes")
 g_map = geo_map()
 

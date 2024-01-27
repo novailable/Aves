@@ -7,6 +7,7 @@ from map import geo_map
 
 app = Flask(__name__)
 
+print("Changes")
 g_map = geo_map()
 
 

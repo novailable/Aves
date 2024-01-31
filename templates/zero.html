@@ -17,7 +17,7 @@
     {% endblock %}
     <title>{% block title %} {% endblock %}</title>
 </head>
-<body class="relative">
+<body class="">
 <nav class="align-middle flex justify-between">
     <div class="flex items-center">
         <a class="flex items-center" href="/">
@@ -25,29 +25,249 @@
         </a>
         <ul class="flex flex-row items-center gap-2 ml-3">
             <li>
-                <a class="p-4 py-2 border-2 rounded-md" href="/">Home</a>
+                <a class="p-4 py-2 active:bg-gray-500
+                {% if active_page == 'home' %}rounded-md bg-gray-700 text-gray-100{% endif %}"
+                   href="{{ url_for('index') }}">
+                    Home
+                </a>
             </li>
             <li>
-                <a class="p-4 py-2 border-2 rounded-md" href="#">Explore</a>
+                <a class="p-4 py-2">Explore</a>
             </li>
             <li>
-                <a class="p-4 py-2 border-2 rounded-md" href="/map">Map</a>
+                <a class="p-4 py-2 {% if active_page == 'map' %}rounded-md bg-gray-700 text-gray-100{% endif %}"
+                   href="{{ url_for('map') }}">Map</a>
             </li>
         </ul>
     </div>
     <div class="flex items-center gap-2 mr-6">
-        <a class="p-2 py-1 rounded-md bg-gray-700 text-gray-100" href="#">Sign In</a>
-        <a class="p-2 py-1 rounded-md bg-gray-700 text-gray-100" href="#">Sign Up</a>
+        <button class="p-2 py-1 rounded-md bg-gray-50 hover:bg-gray-700 hover:text-gray-50" id="login-btn">Sign In</button>
+        <button class="p-2 py-1 rounded-md bg-gray-50 hover:bg-gray-700 hover:text-gray-50" id="signup-btn">Sign Up</button>
     </div>
     <div class="flex items-center gap-2 hidden">
         <a href="#">
             <a class="p-2 py-1 rounded-md bg-gray-700 text-gray-100" href="#">Log Out</a>
             <img alt="profile" class="w-14 rounded-full mr-6" src="{{url_for('static', filename=profiles)}}">
         </a>
-
     </div>
 </nav>
 <hr>
+
+
+<!-- #######################################      #Sign In       ############################################### -->
+
+
+<div class=" fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden" id="login-form">
+    <div class="flex items-center justify-center h-full">
+        <div class="bg-gray-50  rounded-lg p-16 shadow-md max-w-md relative">
+            <button class="absolute right-3 top-3 px-3 text-2xl hover:text-red-500 hover:border-red-500" id="login-exit"> x </button>
+
+            <h2 class="text-4xl font-normal flex justify-center mt-3">Sign In</h2>
+            <form action="/">
+                <div class="relative h-11 w-full min-w-[200px] my-8">
+                    <input type="email" id="login-email" class="peer h-full w-full border-b border-blue-gray-200
+                    bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0
+                    transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0
+                    disabled:border-0 disabled:bg-blue-gray-50" placeholder=" "/>
+                    <label id="login-email-label" for="login-email" class="after:content[' ']
+                    pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal
+                    leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5
+                    after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500
+                    after:transition-transform after:duration-300 peer-placeholder-shown:text-sm
+                    peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500
+                    peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-blue-500
+                    peer-focus:after:scale-x-100 peer-focus:after:border-blue-500 peer-disabled:text-transparent
+                    peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                    Email</label>
+                    <span class="text-red-500 text-xs hidden" id="login-email-error">Enter valid email address!</span>
+                </div>
+                <div class="relative h-11 w-full min-w-[200px] my-8">
+                    <input type="password" id="logInPass" class="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50" placeholder=" "/>
+                    <label for="logInPass" class="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:after:scale-x-100 peer-focus:after:border-blue-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                    Password</label>
+                    <span>
+                        <a href="#" class="inline-block align-baseline text-xs text-blue-500 hover:text-blue-700">Forgot Password?</a>
+                    </span>
+                </div>
+                <button type="submit" id="login-submit" class="bg-gray-700 hover:bg-gray-50 text-white border hover:border-gray-700 hover:text-gray-700 font-bold py-2 px-4 mt-6 rounded focus:outline-none focus:shadow-outline">Submit</button>
+            </form>
+            <div class="text-center mt-5">
+                Don't have an account? <a href="#" class="text-blue-500 hover:text-blue-700 font-bold">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- #######################################      #Sign UP       ############################################### -->
+
+
+<div class=" fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden" id="signup-form">
+    <div class="flex items-center justify-center h-full">
+        <div class="bg-gray-50 rounded-lg p-16 px-24 shadow-md max-w-md relative">
+            <button class="absolute right-3 top-3 px-3 text-2xl hover:text-red-500 hover:border-red-500" id="signup-exit"> x </button>
+            <h2 class="text-4xl font-normal flex justify-center mt-3">Sign Up</h2>
+            <form action="/">
+                <div class="relative h-11 w-full min-w-[200px] my-8" id="signup-username">
+                    <input type="text" id="userName" class="peer h-full w-full border-b border-blue-gray-200
+                    bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0
+                    transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0
+                    disabled:border-0 disabled:bg-blue-gray-50" placeholder=" "/>
+                    <label for="userName" class="after:content[' ']
+                    pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal
+                    leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5
+                    after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500
+                    after:transition-transform after:duration-300
+                    peer-placeholder-shown:text-sm
+                    peer-placeholder-shown:leading-[4.25]
+                    peer-placeholder-shown:text-blue-gray-500
+                    peer-focus:text-[11px]
+                    peer-focus:leading-tight peer-focus:text-blue-500
+                    peer-focus:after:scale-x-100
+                    peer-focus:after:border-blue-500
+                    peer-disabled:text-transparent
+                    peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                    Username</label>
+                </div>
+                <div class="relative h-11 w-full min-w-[200px] my-8" id="signup-email">
+                    <input type="email" id="signUpEmail" class="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50" placeholder=" "/>
+                    <label for="signUpEmail" id="sign-email-label" class="after:content[' ']
+                    pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal
+                    leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5
+                    after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500
+                    after:transition-transform after:duration-300 peer-placeholder-shown:text-sm
+                    peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500
+                    peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-blue-500
+                    peer-focus:after:scale-x-100 peer-focus:after:border-blue-500 peer-disabled:text-transparent
+                    peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                    Email</label>
+                    <span class="text-red-500 text-xs hidden" id="signup-email-error">Enter valid email address!</span>
+
+                </div>
+
+                <div class="relative h-11 w-full min-w-[200px] my-8" id="signup-pass">
+                    <input type="password" id="signUpPass" class="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50" placeholder=" "/>
+                    <label for="signUpPass" class="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:after:scale-x-100 peer-focus:after:border-blue-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                        Password</label>
+                </div>
+
+
+                <div class="relative h-11 w-full min-w-[200px] my-8" id="signup-confirm-pass">
+                    <input type="password" id="confirmPass" class="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-blue-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50" placeholder=" "/>
+                    <label id="confirm-label" for="confirmPass" class="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:after:scale-x-100 peer-focus:after:border-blue-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                        Confirm Password</label>
+                    <span class="text-red-500 text-xs hidden" id="confirm-pass-error">Password do not match!</span>
+                </div>
+
+
+                <button id="signup-submit" type="submit" class="disabled:bg-opacity-50 bg-gray-700 text-white border enabled:hover:bg-gray-50  enabled:hover:border-gray-700 enabled:hover:text-gray-700 font-bold py-2 px-4 mt-6 rounded focus:outline-none focus:shadow-outline">Submit</button>
+            </form>
+            <div class="text-center mt-5">
+                Already have an account? <a href="#" class="text-blue-500 hover:text-blue-700 font-bold">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const loginBtn = document.getElementById("login-btn");
+    const loginForm = document.getElementById("login-form");
+
+    loginBtn.addEventListener("click", () => {
+        loginForm.classList.remove("hidden");
+        loginBtn.classList.add("bg-gray-700", "text-gray-100")
+    });
+
+    const loginExit = document.getElementById("login-exit");
+
+    loginExit.addEventListener("click", () => {
+        loginForm.classList.add("hidden")
+        loginForm.querySelector('form').reset();
+        loginBtn.classList.remove("bg-gray-700", "text-gray-100")
+    })
+
+
+    const logInEmail = document.getElementById("login-email")
+    const logInEmailLabel = document.getElementById("login-email-label")
+    const logInSubmit = document.getElementById("login-submit")
+    const logInEmailError = document.getElementById("login-email-error")
+    logInEmail.addEventListener("keyup", () => {
+        invalidInput(!validateEmail(logInEmail.value), logInEmail,logInEmailLabel, logInSubmit, logInEmailError)
+    });
+
+    const signUpBtn = document.getElementById("signup-btn");
+    const signUpForm = document.getElementById("signup-form");
+
+    signUpBtn.addEventListener("click", () => {
+        signUpForm.classList.remove("hidden");
+        signUpBtn.classList.add("bg-gray-700", "text-gray-100")
+    });
+
+    const signUpExit = document.getElementById("signup-exit");
+
+    signUpExit.addEventListener("click", () => {
+        signUpForm.classList.add("hidden")
+        signUpForm.querySelector('form').reset();
+        signUpBtn.classList.remove("bg-gray-700", "text-gray-100")
+    })
+
+
+    const signUpSubmit = document.getElementById("signup-submit");
+
+    const signUpEmail = document.getElementById("signUpEmail");
+    const signUpEmailLabel = document.getElementById("sign-email-label");
+    const signUpEmailError = document.getElementById("signup-email-error")
+
+    signUpEmail.addEventListener("keyup", () => {
+        invalidInput(!validateEmail(signUpEmail.value), signUpEmail,signUpEmailLabel, signUpSubmit, signUpEmailError)
+    });
+
+
+
+    function validateEmail(email) {
+    // Regular expression for basic email format
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+        // Check if email matches the regex
+        return emailRegex.test(email);
+
+    }
+
+
+    const signUpPass = document.getElementById("signUpPass");
+    const confirmPass = document.getElementById("confirmPass");
+    const confirmLabel = document.getElementById("confirm-label");
+    const signUpConfirmError = document.getElementById("confirm-pass-error")
+
+    confirmPass.addEventListener("keyup", () => {
+        invalidInput(signUpPass.value !== confirmPass.value, confirmPass, confirmLabel, signUpSubmit, signUpConfirmError)
+    });
+
+    function invalidInput(condition, inputField, inputLabel, submitBtn, errorMSGElement)
+    {
+        if (condition) {
+           inputField.classList.add("text-red-500", "focus:border-red-500" );
+
+            inputLabel.classList.add("peer-focus:text-red-500", "peer-focus:after:border-red-500");
+            inputLabel.classList.remove("peer-focus:text-green-500", "peer-focus:after:border-green-500");
+            errorMSGElement.classList.remove("hidden");
+
+            submitBtn.disabled = true;
+        }
+        else
+        {
+             inputField.classList.remove("text-red-500", "focus:border-red-500" );
+
+            inputLabel.classList.remove("peer-focus:text-red-500", "peer-focus:after:border-red-500");
+            inputLabel.classList.add("peer-focus:text-green-500", "peer-focus:after:border-green-500");
+            errorMSGElement.classList.add("hidden");
+
+            submitBtn.disabled = false;
+        }
+    }
+
+
+</script>
 {% block content %}
 {% endblock %}
 <footer>

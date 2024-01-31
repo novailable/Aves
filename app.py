@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify
+from flask_pymongo import PyMongo
+import pandas as pd
+
 
 from map import geo_map
 
@@ -6,20 +9,18 @@ from map import geo_map
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --minify
 
 app = Flask(__name__)
-print("ASDF")
-print("Changes")
 g_map = geo_map()
-
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("index.html", active_page='home')
+
 
 
 @app.route('/map')
 def map():
     API, map_id = g_map.get_API_ID()
-    return render_template("map.html", API=API, map_id=map_id)
+    return render_template("map.html", API=API, map_id=map_id, active_page='map')
 
 
 @app.route('/birding_area', methods=["POST"])

@@ -25,17 +25,23 @@
         </a>
         <ul class="flex flex-row items-center gap-2 ml-3">
             <li>
-                <a class="p-4 py-2 active:bg-gray-500
-                {% if active_page == 'home' %}rounded-md bg-gray-700 text-gray-100{% endif %}"
+                <a class="p-4 py-2 rounded-md border
+                {% if active_page == 'home' %} bg-gray-700 text-gray-100 hover:bg-gray-50 hover:border-gray-700 hover:text-gray-700
+                {% else %} hover:bg-gray-700 hover:text-gray-50 border-white{% endif %}"
                    href="{{ url_for('index') }}">
                     Home
                 </a>
             </li>
             <li>
-                <a class="p-4 py-2">Explore</a>
+                <a class="p-4 py-2 rounded-md border
+                {% if active_page == 'explore' %} bg-gray-700 text-gray-100 hover:border-gray-700 hover:bg-gray-50 hover:text-gray-700
+                {% else %} hover:bg-gray-700 hover:text-gray-50 border-white{% endif %}"
+                   href="{{ url_for('explore') }}">Explore</a>
             </li>
             <li>
-                <a class="p-4 py-2 {% if active_page == 'map' %}rounded-md bg-gray-700 text-gray-100{% endif %}"
+                <a class="p-4 py-2 rounded-md border
+                {% if active_page == 'map' %} bg-gray-700 text-gray-100 hover:border-gray-700 hover:bg-gray-50 hover:text-gray-700
+                {% else %} hover:bg-gray-700 hover:text-gray-50 border-white{% endif %}"
                    href="{{ url_for('map') }}">Map</a>
             </li>
         </ul>
@@ -45,10 +51,8 @@
         <button class="p-2 py-1 rounded-md bg-gray-50 hover:bg-gray-700 hover:text-gray-50" id="signup-btn">Sign Up</button>
     </div>
     <div class="flex items-center gap-2 hidden">
-        <a href="#">
-            <a class="p-2 py-1 rounded-md bg-gray-700 text-gray-100" href="#">Log Out</a>
-            <img alt="profile" class="w-14 rounded-full mr-6" src="{{url_for('static', filename=profiles)}}">
-        </a>
+        <a class="p-2 py-1 rounded-md bg-gray-700 text-gray-100" href="#">Log Out</a>
+        <img alt="profile" class="w-14 rounded-full mr-6" src="{{url_for('static', filename=profiles)}}">
     </div>
 </nav>
 <hr>
@@ -60,7 +64,7 @@
 <div class=" fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden" id="login-form">
     <div class="flex items-center justify-center h-full">
         <div class="bg-gray-50  rounded-lg p-16 shadow-md max-w-md relative">
-            <button class="absolute right-3 top-3 px-3 text-2xl hover:text-red-500 hover:border-red-500" id="login-exit"> x </button>
+            <button class="absolute right-3 top-3 px-3 text-2xl hover:text-red-500 hover:border-red-500" id="login-exit">&times;</button>
 
             <h2 class="text-4xl font-normal flex justify-center mt-3">Sign In</h2>
             <form action="/">
@@ -105,7 +109,7 @@
 <div class=" fixed inset-0 bg-gray-900 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden" id="signup-form">
     <div class="flex items-center justify-center h-full">
         <div class="bg-gray-50 rounded-lg p-16 px-24 shadow-md max-w-md relative">
-            <button class="absolute right-3 top-3 px-3 text-2xl hover:text-red-500 hover:border-red-500" id="signup-exit"> x </button>
+            <button class="absolute right-3 top-3 px-3 text-2xl hover:text-red-500 hover:border-red-500" id="signup-exit">&times;</button>
             <h2 class="text-4xl font-normal flex justify-center mt-3">Sign Up</h2>
             <form action="/">
                 <div class="relative h-11 w-full min-w-[200px] my-8" id="signup-username">

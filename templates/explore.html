@@ -1,0 +1,82 @@
+{% extends "zero.html" %}
+{% block script %}{%endblock%}
+{% block title %} Explore {% endblock %}
+{% block content %}
+<div class=" grid grid-cols-5 w-full h-96">
+    <div class=" border-r border-gray-700 p-3">
+        <p class=" font-simple text-xl pb-3">Color of Bird</p>
+            <select class="w-full border rounded-md border-gray-700" id="color-dropdown">
+                {% for color in colors %}
+                    <option value="{{ color }}" class="bg-[{{color}}]" >{{ color }}</option>
+                {% endfor %}
+            </select>
+            <div id="color-chip-box">
+                <div class="center relative inline-block select-none whitespace-nowrap rounded-lg bg-gradient-to-tr from-pink-600 to-pink-400 py-2 px-3.5 align-baseline font-sans text-xs font-bold uppercase leading-none text-white"
+                     data-dismissible="chip">
+                    <div class="mr-5 mt-px">Dismissible</div>
+                    <div class="absolute top-1 right-1 mx-px mt-[0.5px] w-max rounded-md bg-pink-800 transition-colors hover:bg-pink-900"
+                         data-dismissible-target="chip">
+                        <div role="button" class="h-5 w-5 p-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="bg-green-500 col-start-2 col-span-4">
+        <div class="relative w-full mr-4">
+            <input class="w-full pl-8 pr-3 py-2 border-b focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-500 transition-shadow"
+                   placeholder="Search Bird by Name..."
+                   type="text">
+            <button class="absolute right-2 top-0 mt-2 mr-2 pl-2 border-l border-gray-700" type="submit">
+                <svg class="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 20 20"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                          fill-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+
+    const dropdown = document.getElementById('colo-dropdown');
+    dropdown.addEventListener('change', handleDropdownChange);
+
+    function handleDropdownChange(event) {
+        const selectedValue = event.target.value;
+
+        let colorChip = createChip(selectedValue)
+        document.getElementById('color-chip-box').appendChild(colorChip);
+}
+    function createChip(selectValue) {
+      let chip = document.createElement('div');
+      chip.classList.add('chip');
+      chip.textContent = text;
+
+      let closeBtn = document.createElement('span');
+      closeBtn.classList.add('close');
+      closeBtn.innerHTML = '&times;';
+      closeBtn.addEventListener('click', function() {
+        deleteChip(chip);
+      });
+
+      chip.appendChild(closeBtn);
+      return chip;
+    }
+
+    function deleteChip(chip) {
+      let container = document.getElementById('color-chip-box');
+      container.removeChild(chip);
+    }
+
+    function addChip() {
+        let chip = createChip(text);
+
+      }
+
+</script>
+{% endblock %}

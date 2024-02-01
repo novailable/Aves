@@ -13,7 +13,7 @@ g_map = geo_map()
 
 @app.route('/')
 def index():
-    return render_template("index.html", active_page='home')
+    return render_template("explore.html", active_page='home')
 
 
 
@@ -33,6 +33,10 @@ def get_birding_area():
     return jsonify({'birding_area': birding_area})
 
 
+@app.route('/explore')
+def explore():
+    colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#800080", "#00FFFF", "#FFA500"]
+    return render_template("explore.html", active_page = 'explore', colors=colors)
 # @app.rout('/test', methods=['POST'])
 
 if __name__ == '__main__':

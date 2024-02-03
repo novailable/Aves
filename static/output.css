@@ -839,6 +839,10 @@ video {
   margin: 2.5rem;
 }
 
+.m-9 {
+  margin: 2.25rem;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;

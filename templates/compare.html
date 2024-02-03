@@ -1,10 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "zero.html" %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const birdsListPanel = document.getElementById('bird-colors');
 
-</body>
-</html>
+        if (birdsListPanel) {
+            var colorChips = birdsListPanel.querySelectorAll('[data-color-code]');
+
+            colorChips.forEach(function(chip) {
+                // Extract RGB values from the computed background color
+                let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
+                chip.style.color = textColorFromHex(null, chipColor)
+            })
+        }
+    });
+</script>
+{% endblock %}
+{% block title %} Compare {% endblock %}
+
+{% block content %}
+<div></div>
+{% endblock %}

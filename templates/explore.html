@@ -1,31 +1,259 @@
 {% extends "zero.html" %}
-{% block script %}{%endblock%}
+{% block script %}
+<script>
+
+    function chipCreation(chip_container, color_code, text){
+
+        let chipContainer = document.getElementById(chip_container),
+            chip = document.createElement('div'),
+            chipText = document.createElement('p'),
+            chipButton = document.createElement('button');
+
+        chip.style.backgroundColor = `${color_code}`
+        chip.classList.add("center", "relative", "inline-block", "select-none", "whitespace-nowrap","rounded-lg",
+           "py-2", "px-3.5", "align-baseline", "font-sans", "text-xs", "font-bold", "leading-none",
+            "text-gray-200");
+
+        chipText.classList.add("mr-5", "mt-px");
+        chipText.textContent = text;
+        chip.appendChild(chipText)
+
+        chipButton.classList.add("h-5", "w-5", "p-1", "absolute", "top-1", "right-1", "mx-px", "mt-[0.5px]",
+            "rounded-md", "transition-colors", "hover:bg-gray-900")
+        chipButton.textContent = "x";
+        chip.appendChild(chipButton)
+
+
+        chipContainer.appendChild(chip);
+
+        chipButton.addEventListener('click', () =>{
+            chipContainer.removeChild(chip);
+        });
+    }
+
+
+    function showMore(show_more_btn, more_panel)
+    {
+        let morePanel = document.getElementById(more_panel),
+            isPanelHidden = morePanel.classList.contains('hidden');
+        console.log(isPanelHidden)
+        if (isPanelHidden) {
+            morePanel.classList.remove('hidden');
+        }
+        else {
+            morePanel.classList.add('hidden');
+        }
+    }
+
+    function inputCustomSearch(input, more_panel){
+
+        let searchTerm = input.value.toLowerCase(),
+            morePanel = document.getElementById(more_panel),
+            isPanelHidden = morePanel.classList.contains('hidden'),
+            items = morePanel.querySelectorAll('div');
+        if (isPanelHidden) {
+            morePanel.classList.remove('hidden');
+        }
+        console.log(searchTerm)
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            console.log(text)
+            if (text.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
+    function colorChip(color_option, color_chip_container){
+        var colorData = color_option.dataset, colorCode = colorData.colorCode, colorName = colorData.colorName,
+            colorMorePanel = document.getElementById('color-more-panel'), colorInput = document.getElementById('color-input');
+
+        console.log(colorCode, colorName)
+        chipCreation(color_chip_container, colorCode, colorName )
+        colorInput.value = colorName
+        colorMorePanel.classList.add('hidden');
+    }
+
+    function sizeChip(size_option, size_chip_container) {
+        let birdName = size_option.dataset.name,
+            birdValue = size_option.dataset.value,
+            sizeInput = document.getElementById('size_input'),
+            sizeMorePanel = document.getElementById('size-more-panel');
+
+        chipCreation(size_chip_container, '#374151', birdName);
+        sizeInput.value = birdName;
+        sizeMorePanel.classList.add('hidden');
+
+    }
+
+    function habitatChip(habitat_option, habitat_chip_container){
+        let habitatName = habitat_option.dataset.name, habitatColor = habitat_option.dataset.colorCode,
+            habitatInput = document.getElementById('habit-input'),
+            habitatMorePanel = document.getElementById('habitat-more-panel')
+
+        chipCreation(habitat_chip_container, habitatColor, habitatName)
+        habitatInput.value = habitatName
+        habitatMorePanel.classList.add('hidden');
+    }
+
+    function orderChip(order_option, order_chip_container){
+        let orderName = order_option.dataset.name
+            orderInput = document.getElementById('order-input'),
+            orderMorePanel = document.getElementById('order-more-panel')
+
+        chipCreation(order_chip_container, '#9F9286', orderName)
+        orderInput.value = ordertName
+        orderMorePanel.classList.add('hidden');
+    }
+
+
+</script>
+{%endblock%}
 {% block title %} Explore {% endblock %}
 {% block content %}
-<div class=" grid grid-cols-5 w-full h-96">
-    <div class=" border-r border-gray-700 p-3">
-        <p class=" font-simple text-xl pb-3">Color of Bird</p>
-            <select class="w-full border rounded-md border-gray-700" id="color-dropdown">
-                {% for color in colors %}
-                    <option value="{{ color }}" class="bg-[{{color}}]" >{{ color }}</option>
-                {% endfor %}
-            </select>
-            <div id="color-chip-box">
-                <div class="center relative inline-block select-none whitespace-nowrap rounded-lg bg-gradient-to-tr from-pink-600 to-pink-400 py-2 px-3.5 align-baseline font-sans text-xs font-bold uppercase leading-none text-white"
-                     data-dismissible="chip">
-                    <div class="mr-5 mt-px">Dismissible</div>
-                    <div class="absolute top-1 right-1 mx-px mt-[0.5px] w-max rounded-md bg-pink-800 transition-colors hover:bg-pink-900"
-                         data-dismissible-target="chip">
-                        <div role="button" class="h-5 w-5 p-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+<div class=" grid grid-cols-3 w-full h-full">
+    <div class=" border-r border-gray-700 px-3 h-">
+        <!--  #color  -->
+        <div>
+            <p class=" font-simple text-xl py-3">Color of Birds</p>
+            <div class="w-full mb-2 flex gap-1 flex-wrap" id="color-chip-container">
+                <!-- #color-chip  -->
+            </div>
+            <div class="w-full">
+                <div class="relative w-full" id="color-dropdown">
+                    <input type="text" id="color-input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with color" oninput="inputCustomSearch(this, 'color-more-panel')">
+                    <button class="absolute right-2 top-1 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'color-more-panel')">
+                        <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="absolute z-10 w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto hidden" id="color-more-panel">
+                        {% for color in colors %}
+                        <div class="w-full h-10 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
+                        data-color-code="{{color[1]}}" data-color-name="{{color[0]}}" onclick="colorChip(this, 'color-chip-container')">
+                            <p class="w-10 h-6" style="background: {{color[1]}}"></p>
+                            <p class="text-sm p-y-2 px-5 uppercase">{{color[0]}}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mt-5 mb-2">
+
+        <!--  #size  -->
+        <div>
+            <p class=" font-simple text-xl py-2">Birds Size</p>
+            <div class="w-full mb-2 flex gap-1 flex-wrap" id="size-chip-container">
+                <!-- #size-chip  -->
+            </div>
+            <div class="w-full">
+                <div class="relative" id="size-dropdown">
+                    <input type="input" id="size_input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with size" oninput="inputCustomSearch(this, 'size-more-panel')">
+                        <button class="absolute right-2 top-1 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'size-more-panel')">
+                            <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                             </svg>
+                        </button>
+                    <div class="absolute z-20 w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto hidden" id="size-more-panel">
+                        <div class="w-full h-12 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
+                        data-value="1" data-name="Ruby-crowned Kinglet" onclick=sizeChip(this,'size-chip-container')>
+                            <img src="{{url_for('static', filename='birds_size/kinglet.png')}}" class="w-8 h-8 rounded-md" >
+                            <p class="text-sm pl-8">Ruby-crowned Kinglet </br> Length: 4.25in Width: 6.75 ~ 7.5in</p>
+                        </div>
+                        <div class="w-full h-12 flex flex-row items-center p-2 bg-white border rounded-md hover:bg-gray-100/70"
+                            data-value="2" data-name="House Sparrow" onclick=sizeChip(this,'size-chip-container')>
+                            <img src="{{url_for('static', filename='birds_size/sparrow.png')}}" class="w-10 h-10 rounded-md" >
+                            <p class="text-sm pl-6">House Sparrow</br>Length: 5.5 - 6.5 in Wingspan: 9.5 - 10 in</p>
+                        </div>
+                        <div class="w-full h-12 flex flex-row items-center p-2 bg-white border rounded-md hover:bg-gray-100/70"
+                            data-value="3" data-name="European Starling" onclick=sizeChip(this,'size-chip-container')>
+                            <img src="{{url_for('static', filename='birds_size/starling.png')}}" class="w-11 h-11 rounded-md" >
+                            <p class="text-sm pl-5">European Starling</br>Length: 8.5 in Wingspan: 15.5 in</p>
+                        </div>
+                        <div class="w-full h-12 flex flex-row items-center p-2 bg-white border rounded-md hover:bg-gray-100/70"
+                            data-value="4" data-name="Ring-billed Gull" onclick=sizeChip(this,'size-chip-container')>
+                            <img src="{{url_for('static', filename='birds_size/gull.png')}}" class="w-14 rounded-md" >
+                            <p class="text-sm pl-2">Ring-billed Gull</br>Length: 18-19 in Wingspan: 48 in</p>
+                        </div>
+                        <div class="w-full h-20 flex flex-row items-center p-4 bg-white border rounded-md hover:bg-gray-100/70"
+                             data-value="5" data-name="Red-tailed-Hawk" onclick=sizeChip(this,'size-chip-container')>
+                            <img src="{{url_for('static', filename='birds_size/hawk.png')}}" class="w-10 rounded-md" >
+                            <p class="text-sm pl-4">Red-tailed Hawk</br>Length: 19 - 25 in Wingspan: 46 - 58 in</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <hr class="mt-5 mb-2">
+
+        <!-- #habitats -->
+
+        <div>
+            <p class=" font-simple text-xl py-3">Habitats of Birds</p>
+            <div class="w-full mb-2 flex gap-1 flex-wrap" id="habitat-chip-container">
+                <!-- #chip  -->
+            </div>
+            <div class="w-full">
+                <div class="relative w-full" id="habitat-dropdown">
+                    <input type="text" id="habit-input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with habitats" oninput="inputCustomSearch(this, 'habit-more-panel')">
+                    <button class="absolute right-2 top-1 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'habitat-more-panel')">
+                        <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="absolute z-30 w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto hidden" id="habitat-more-panel">
+                        {% for habitat in habitats %}
+                        <div class="w-full h-16 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
+                        data-color-code="{{habitat[1]}}" data-name="{{habitat[0]}}" onclick="habitatChip(this, 'habitat-chip-container')">
+                            <img src="{{url_for('static', filename=habitat[2])}}" class="w-20 rounded-md">
+                            <p class="text-sm p-y-2 px-5">{{habitat[0]}}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mt-5 mb-2">
+
+        <!--  #orders  -->
+
+        <div>
+            <p class=" font-simple text-xl py-3">Birds Order</p>
+            <div class="w-full mb-2 flex gap-1 flex-wrap" id="order-chip-container">
+                <!-- #chip  -->
+            </div>
+            <div class="w-full">
+                <div class="relative w-full" id="order-dropdown">
+                    <input type="text" id="order-input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with orders" oninput="inputCustomSearch(this, 'order-more-panel')">
+                    <button class="absolute right-2 top-1 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'order-more-panel')">
+                        <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="absolute z-[31] w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto hidden" id="order-more-panel">
+                        {% for order in orders %}
+                        <div class="w-full h-13 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
+                             data-name="{{order[0]}}" onclick="orderChip(this, 'order-chip-container')">
+                            <img src="{{url_for('static', filename=order[1])}}" class="w-20 rounded-md">
+                            <p class="text-sm p-y-2 px-5">{{order[0]}}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--  #search  -->
     </div>
-    <div class="bg-green-500 col-start-2 col-span-4">
+    <div class=" col-start-2 col-span-2">
         <div class="relative w-full mr-4">
             <input class="w-full pl-8 pr-3 py-2 border-b focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-500 transition-shadow"
                    placeholder="Search Bird by Name..."
@@ -39,44 +267,23 @@
                 </svg>
             </button>
         </div>
+
+        <div class="w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto" id="bird-list-panel">
+            <div class="w-full flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
+            data-value="1" data-name="Ruby-crowned Kinglet" onclick=sizeChip(this,'size-chip-container')>
+                <img src="{{url_for('static', filename='birds_size/kinglet.png')}}" class="w- h-8 rounded-md" >
+                <p class="text-sm pl-8">Ruby-crowned Kinglet </br> Length: 4.25in Width: 6.75 ~ 7.5in</p>
+            </div>
+        </div>
+
+
+
+
     </div>
 </div>
+
 <script>
 
-    const dropdown = document.getElementById('colo-dropdown');
-    dropdown.addEventListener('change', handleDropdownChange);
-
-    function handleDropdownChange(event) {
-        const selectedValue = event.target.value;
-
-        let colorChip = createChip(selectedValue)
-        document.getElementById('color-chip-box').appendChild(colorChip);
-}
-    function createChip(selectValue) {
-      let chip = document.createElement('div');
-      chip.classList.add('chip');
-      chip.textContent = text;
-
-      let closeBtn = document.createElement('span');
-      closeBtn.classList.add('close');
-      closeBtn.innerHTML = '&times;';
-      closeBtn.addEventListener('click', function() {
-        deleteChip(chip);
-      });
-
-      chip.appendChild(closeBtn);
-      return chip;
-    }
-
-    function deleteChip(chip) {
-      let container = document.getElementById('color-chip-box');
-      container.removeChild(chip);
-    }
-
-    function addChip() {
-        let chip = createChip(text);
-
-      }
 
 </script>
 {% endblock %}

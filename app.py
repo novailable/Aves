@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 import pandas as pd
 
-
 from map import geo_map
 
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --watch
@@ -11,10 +10,10 @@ from map import geo_map
 app = Flask(__name__)
 g_map = geo_map()
 
+
 @app.route('/')
 def index():
-    return render_template("explore.html", active_page='home')
-
+    return render_template("index.html", active_page='home')
 
 
 @app.route('/map')
@@ -35,8 +34,20 @@ def get_birding_area():
 
 @app.route('/explore')
 def explore():
-    colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#800080", "#00FFFF", "#FFA500"]
-    return render_template("explore.html", active_page = 'explore', colors=colors)
+    colors = [("red", "#ff0000"), ("green", "#00ff00"), ("blue", "#0000ff"), ("yellow", "#ffff00"),
+              ("purple", "#800080"), ("cyan", "#00ffff"),
+              ("orange", "#ffa500"), ]
+
+    habitats = [('Forest', '#3D5435', 'birds_habitat/forest.jpg')] * 20
+
+    orders = [('Passerine', 'birds_order/passerine.jpg')]
+
+    bird_data = ['ABBOTTS BABBLER', 'birds']
+
+    print(habitats)
+    return render_template("explore.html", active_page='explore', colors=colors, habitats=habitats, orders = orders)
+
+
 # @app.rout('/test', methods=['POST'])
 
 if __name__ == '__main__':

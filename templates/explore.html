@@ -2,24 +2,28 @@
 {% block script %}
 <script>
 
+
     function chipCreation(chip_container, color_code, text){
 
         let chipContainer = document.getElementById(chip_container),
             chip = document.createElement('div'),
             chipText = document.createElement('p'),
-            chipButton = document.createElement('button');
+            chipButton = document.createElement('button'),
+            textExitBtnColor = textColorFromHex(color_code, null);
+
 
         chip.style.backgroundColor = `${color_code}`
         chip.classList.add("center", "relative", "inline-block", "select-none", "whitespace-nowrap","rounded-lg",
-           "py-2", "px-3.5", "align-baseline", "font-sans", "text-xs", "font-bold", "leading-none",
-            "text-gray-200");
+           "py-2", "px-3.5", "align-baseline", "font-sans", "text-xs", "font-bold", "leading-none");
 
         chipText.classList.add("mr-5", "mt-px");
         chipText.textContent = text;
+        chipText.style.color = textExitBtnColor
         chip.appendChild(chipText)
 
         chipButton.classList.add("h-5", "w-5", "p-1", "absolute", "top-1", "right-1", "mx-px", "mt-[0.5px]",
-            "rounded-md", "transition-colors", "hover:bg-gray-900")
+            "rounded-md", "transition-colors", "hover:bg-gray-900", "hover:text-gray-200")
+        chipButton.style.color = textExitBtnColor
         chipButton.textContent = "x";
         chip.appendChild(chipButton)
 
@@ -100,7 +104,7 @@
     }
 
     function orderChip(order_option, order_chip_container){
-        let orderName = order_option.dataset.name
+        let orderName = order_option.dataset.name,
             orderInput = document.getElementById('order-input'),
             orderMorePanel = document.getElementById('order-more-panel')
 
@@ -108,6 +112,49 @@
         orderInput.value = ordertName
         orderMorePanel.classList.add('hidden');
     }
+
+
+
+    function compareBird(compare_btn, bird_name, bird_id) {
+        let compareBirdOne = document.getElementById("compare-bird-1"),
+            compareBirdTwo = document.getElementById("compare-bird-2"),
+            birdOneText = compareBirdOne.querySelector('p'),
+            birdTwoText = compareBirdTwo.querySelector('p'),
+            vsText = document.getElementById("compare-vs-text"),
+            compareSubBtn = document.getElementById("compare-submit");
+
+        if (birdOneText.textContent) {
+            birdTwoText.textContent = bird_name;
+            compareBirdTwo.classList.remove('hidden');
+        } else {
+            birdOneText.textContent = bird_name;
+            vsText.classList.remove('hidden');
+            compareBirdOne.classList.remove('hidden');
+        }
+
+        if (birdOneText.textContent && birdTwoText.textContent) {
+            compareSubBtn.classList.remove('hidden');
+        }
+    }
+
+
+
+    //    #bird-list-color-change
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const birdsListPanel = document.getElementById('bird-list-panel');
+
+        if (birdsListPanel) {
+            var colorChips = birdsListPanel.querySelectorAll('[data-color-code]');
+
+            colorChips.forEach(function(chip) {
+                // Extract RGB values from the computed background color
+                let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
+                chip.style.color = textColorFromHex(null, chipColor)
+            })
+        }
+    });
+
 
 
 </script>
@@ -134,7 +181,7 @@
                         {% for color in colors %}
                         <div class="w-full h-10 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
                         data-color-code="{{color[1]}}" data-color-name="{{color[0]}}" onclick="colorChip(this, 'color-chip-container')">
-                            <p class="w-10 h-6" style="background: {{color[1]}}"></p>
+                            <p class="w-10 h-6 border border-gray-300" style="background: {{color[1]}}"></p>
                             <p class="text-sm p-y-2 px-5 uppercase">{{color[0]}}</p>
                         </div>
                         {% endfor %}
@@ -250,9 +297,38 @@
             </div>
         </div>
 
+        <!--  #comparsion  -->
 
-        <!--  #search  -->
+        <hr class="mt-5 mb-2">
+
+        <div>
+            <p class=" font-simple text-xl py-3">Comparison</p>
+            <form class="" id="compare-form">
+                <div id="compare-chip-container" class="w-full mb-2 flex gap-1 flex-wrap items-center">
+                    <div id="compare-bird-1" class="hidden center border border-gray-300 rounded-md bg-gray-100/70 relative inline-block select-none whitespace-nowrap rounded-lg py-2 px-2.5 align-baseline font-sans text-base font-bold leading-none">
+                        <p class="mr-5"></p>
+                        <button class="h-5 w-5 absolute top-1.5 right-1 rounded-md transition-colors hover:bg-gray-700 hover:border-gray-900 hover:text-gray-200">&times;</button>
+                    </div>
+                    <p id="compare-vs-text" class="hidden text-xl font-bold px-3">Vs</p>
+                    <div id="compare-bird-2" class="hidden center border border-gray-300 rounded-md bg-gray-100/70 relative inline-block select-none whitespace-nowrap rounded-lg py-2 px-2.5 align-baseline font-sans text-base font-bold leading-none">
+                        <p class="mr-5"></p>
+                        <button class="h-5 w-5 absolute top-1.5 right-1 rounded-md transition-colors hover:bg-gray-700 hover:border-gray-900 hover:text-gray-200">&times;</button>
+                    </div>
+
+                </div>
+                <button type="submit" id="compare-submit" class="hidden bg-gray-700 text-white border font-bold enabled:hover:bg-gray-50
+                                       hover:border-gray-700 hover:text-gray-700 hover:bg-gray-700 py-1.5 px-2 text-base rounded-md">Compare</button>
+            </form>
+
+        </div>
+
+        <hr class="mt-5 mb-2">
+
     </div>
+
+    <!--  #search  -->
+
+
     <div class=" col-start-2 col-span-2">
         <div class="relative w-full mr-4">
             <input class="w-full pl-8 pr-3 py-2 border-b focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-500 transition-shadow"
@@ -268,12 +344,46 @@
             </button>
         </div>
 
-        <div class="w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto" id="bird-list-panel">
-            <div class="w-full flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
-            data-value="1" data-name="Ruby-crowned Kinglet" onclick=sizeChip(this,'size-chip-container')>
-                <img src="{{url_for('static', filename='birds_size/kinglet.png')}}" class="w- h-8 rounded-md" >
-                <p class="text-sm pl-8">Ruby-crowned Kinglet </br> Length: 4.25in Width: 6.75 ~ 7.5in</p>
-            </div>
+        <!--  #bird-list  -->
+
+        <div class="w-full my-0.5 p-1 border bg-gray-50 max-h-[580px] overflow-y-auto" id="bird-list-panel">
+            {% for bird in birds %}
+                <div class="relative w-full flex flex-row bg-white p-2 border rounded-md hover:bg-gray-100/70">
+                    <img src="{{url_for('static', filename='birds_list/passerine.jpg')}}" class="w-30 h-24 rounded-md" >
+                    <div class="pl-5 flex flex-col">
+                        <div>
+                            <div class="text-xl">{{bird['bird_name']}}</div>
+                            <div class="text-sm">{{bird['bird_sci_name']}}</div>
+                        </div>
+
+                        <!--  #bird-list-color  -->
+
+                        <div class="pt-3">
+                            {% for b_color in bird['bird_color'] %}
+                                <div class="center relative inline-block select-none
+                                            whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans text-xs leading-none"
+                                     style="background: {{b_color}};" data-color-code="{{b_color}}">
+                                    {{b_color}}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="absolute right-2.5 bottom-3 flex flex-row gap-0.5">
+                        <button class="bg-gray-700 text-white border font-bold
+                                       hover:border-gray-700 hover:text-gray-700 hover:bg-gray-50 py-1.5 px-2 text-xs rounded-md" onclick="compareBird(this, '{{ bird['bird_name'] }}', '{{ bird['_id'] }}')">
+                                Compare
+                        </button>
+                        <form action="/bird_detail" method="POST">
+                            <!--  #send-bird-id-4-detail  -->
+                            <input type="hidden" name="bird_id" value="{{ bird['_id'] }}">
+                            <button type="submit" class="bg-gray-700 text-white border font-bold enabled:hover:bg-gray-50
+                                       hover:border-gray-700 hover:text-gray-700 hover:bg-gray-700 py-1.5 px-2 text-xs rounded-md">
+                                Detail
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
 
 

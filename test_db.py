@@ -8,6 +8,6 @@ mongo = PyMongo(app).db
 print(mongo)
 @app.route('/load')
 def load_data():
-    birds = mongo.birds
+    birds = mongo.__birds
     data = birds.find()
 

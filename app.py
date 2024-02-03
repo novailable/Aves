@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from bson import ObjectId
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_pymongo import PyMongo
 import pandas as pd
-
+from db_con import DBCon
 from map import geo_map
 
 # ./tailwindcss -i ./static/input.css -o ./static/output.css --watch
@@ -9,11 +10,14 @@ from map import geo_map
 
 app = Flask(__name__)
 g_map = geo_map()
+con = DBCon(app)
 
 
 @app.route('/')
 def index():
-    return render_template("index.html", active_page='home')
+    bird = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
+    # print(bird_data)
+    return render_template("detail.html", active_page='home', bird=bird)
 
 
 @app.route('/map')
@@ -34,21 +38,34 @@ def get_birding_area():
 
 @app.route('/explore')
 def explore():
+    birds_data = con.get_all_birds()
+
+    birds_search_list = birds_data[['_id', 'bird_name', 'bird_sci_name', 'bird_color']].to_dict(orient='records')
+
+    birds = birds_search_list
+
     colors = [("red", "#ff0000"), ("green", "#00ff00"), ("blue", "#0000ff"), ("yellow", "#ffff00"),
               ("purple", "#800080"), ("cyan", "#00ffff"),
-              ("orange", "#ffa500"), ]
+              ("orange", "#ffa500"), ("asdfasdfasdfadsfasdfasdfasdf", "#ffffff")]
 
     habitats = [('Forest', '#3D5435', 'birds_habitat/forest.jpg')] * 20
 
     orders = [('Passerine', 'birds_order/passerine.jpg')]
 
-    bird_data = ['ABBOTTS BABBLER', 'birds']
+    # birds = [('ABBOTTS BABBLER', 'birds_list/passerine.jpg')]
 
-    print(habitats)
-    return render_template("explore.html", active_page='explore', colors=colors, habitats=habitats, orders = orders)
+    # print(habitats)
+    return render_template("explore.html", active_page='explore', colors=colors, habitats=habitats, orders=orders,
+                           birds=birds)
 
 
-# @app.rout('/test', methods=['POST'])
+@app.route('/bird_detail', methods=['POST', 'GET'])
+def bird_detail():
+    bird_id = request.form.get('bird_id')
+    bird = con.search_bird({"_id": ObjectId(bird_id)})
+
+    return render_template("detail.html", bird=bird)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

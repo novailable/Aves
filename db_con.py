@@ -1,18 +1,70 @@
 from bson import ObjectId
-from flask import Flask
-from app import app
 from flask_pymongo import PyMongo
 import pandas as pd
 
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/aves'
-mongo = PyMongo(app)
+
+class DBCon():
+
+    def __init__(self, app):
+        self.__app = app
+        self.__app.config['MONGO_URI'] = 'mongodb://localhost:27017/aves'
+        self.__mongo = PyMongo(app)
+        self.__birds = self.__mongo.db.birds
+        self.__users = self.__mongo.db.users
+
+    def get_birds(self):
+        return self.__birds
+
+    def get_users(self):
+        return self.__users
+
+    def get_unique_data(self, db, col):
+        return list(db.distinct(col))
+
+    def load_data(self, db, condition=None):
+        data = pd.DataFrame(list(db.find(condition)))
+        return data
+
+    def get_all_birds(self):
+        return self.load_data(self.__birds)
+
+    def search_user(self, gmail, password):
+        return self.__users.find_one({'user_gmail': gmail, 'user_pass': password})
+
+    def search_bird(self, condition):
+        return self.__birds.find_one(condition)
+
+    def insert_user_find(self, user, bird_oid):
+        user_oid = user.iloc[0]['_id']
+        self.__users.update_one({'_id': user_oid}, {'$push': {'user_find': {'bird_id': bird_oid, 'fav': False}}})
+
+    def change_user_find_fav(self, user, bird_oid, fav=True):
+        user = user.iloc[0]['_id']
+        self.__users.update_one({'_id': user, 'user_find.bird_id': bird_oid}, {'$set': {'user_find.$.fav': fav}})
+
+    def delete_user_find(self, user, bird_oid):
+        user_oid = user.iloc[0]['_id']
+        self.__users.update_one({'_id': user_oid}, {'$pull': {'user_find': {"bird_id": bird_oid}}})
 
 
-birds = mongo.db.birds
-users = mongo.db.users
+if __name__ == '__main__':
+    from app import app
 
+    db_con = DBCon(app)
+    user = db_con.search_user('abcdefgh@gmail.com', '12345')
+    print(user)
+    print(user["_id"])
+    #birds = db_con.get_birds()
+    #print(birds)
+    #bird_id = birds.iloc[0]['_id']
+    #bird = db_con.search_bird(birds.iloc[0]['_id'])
+    #print(bird_id)
 
-def load_data(db, condition):
+    #print(db_con.search_bird("65b767bd0418ddceb0fcb308"))
+
+"""
+
+def load_data(db, condition=None):
     data = pd.DataFrame(list(db.find(condition)))
     return data
 
@@ -47,6 +99,11 @@ print(user_name)
 uni_color = get_unique_data(birds, 'bird_color')
 print(uni_color)
 
+
+birds_data = load_data(birds)
+print(birds_data)
 # delete_user_find(user, bird_id)
 # insert_user_find(user, bird_id)
 # change_user_find_fav(user_id, bird_id, fav=False)
+
+"""

@@ -1,0 +1,72 @@
+{% extends "zero.html" %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const birdsListPanel = document.getElementById('bird-colors');
+
+        if (birdsListPanel) {
+            var colorChips = birdsListPanel.querySelectorAll('[data-color-code]');
+
+            colorChips.forEach(function(chip) {
+                // Extract RGB values from the computed background color
+                let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
+                chip.style.color = textColorFromHex(null, chipColor)
+            })
+        }
+    });
+</script>
+{% endblock %}
+{% block title %} Detail {% endblock %}
+{% block content %}
+<div class="p-4 flex flex-row relative">
+    <img src="{{url_for('static', filename='birds_list/'~bird['bird_img'][0])}}" class="h-80">
+    <div class="pl-4 text-lg w-full">
+        <div class="flex flex-col gap-1 pb-3">
+            <p class="text-3xl">{{bird['bird_name']}}</p>
+            <p>Scientific Name - {{bird['bird_sci_name']}}</p>
+            <p>Order - {{bird['bird_order']}}</p>
+            <p>Family - {{bird['bird_family']}}</p>
+            <div id="bird-colors" class="w">Color -
+                {% for b_color in bird['bird_color'] %}
+                    <div class="center relative inline-block select-none
+                                whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans leading-none"
+                         style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
+                        {{b_color[0]}}
+                    </div>
+                {% endfor %}
+            </div>
+            <p>Habitat - {% for b_habitat in bird['bird_habitat'] %}{{b_habitat}}{% endfor %}</p>
+        </div>
+        <hr class="w-full">
+         <div class="text-base pt-2">
+             <p class="text-xl">Biometric Features</p>
+             <div class="pl-4 pt-1">
+                 <p>Size - {{bird['bird_char']['size']}}</p>
+                 <p>Wing - {{bird['bird_char']['wing']}}</p>
+                 <p>Weight - {{bird['bird_char']['weight']}}</p>
+             </div>
+         </div>
+    </div>
+    <a href="\explore" class="absolute right-6 top-4 text-xl px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-700 hover:text-gray-50">&times;</a>
+</div>
+<hr>
+<div class="p-4">
+    <p class="text-2xl ">Description</p>
+    <p class="pt-4 text-justify">{{bird['bird_desc']}}</p>
+</div>
+<hr>
+<div class="p-4">
+    <p class="text-2xl">Distribution</p>
+    <p class="pt-4 text-justify">{{bird['bird_distr']}}</p>
+</div>
+<hr>
+<div class="p-4">
+    <p class="text-2xl">Ecology</p>
+    <p class="pt-4 text-justify">{{bird['bird_eco']}}</p>
+</div>
+<hr>
+<button class=" m-4 py-2 px-4 text-xl rounded-md bg-gray-700 text-white border font-bold hover:bg-gray-50
+                hover:border-gray-700 hover:text-gray-700 hover:bg-gray-50" onclick="history.back()">
+    &lt; Back
+</button>
+{% endblock %}

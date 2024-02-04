@@ -15,9 +15,14 @@ con = DBCon(app)
 
 @app.route('/')
 def index():
+    birds = con.get_all_birds().to_dict(orient='records')
+    for bird in birds:
+        bird['_id'] = str(bird['_id'])
+
     bird = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
-    # print(bird_data)
-    return render_template("detail.html", active_page='home', bird=bird)
+
+    #print(birds)
+    return render_template("admin.html", active_page='home', birds=birds, bird=bird)
 
 
 @app.route('/map')
@@ -40,7 +45,7 @@ def get_birding_area():
 def explore():
     birds_data = con.get_all_birds()
 
-    birds_search_list = birds_data[['_id', 'bird_name', 'bird_sci_name', 'bird_color']].to_dict(orient='records')
+    birds_search_list = birds_data[['_id', 'bird_name', 'bird_sci_name', 'bird_color', 'bird_img']].to_dict(orient='records')
 
     birds = birds_search_list
 
@@ -66,6 +71,20 @@ def bird_detail():
 
     return render_template("detail.html", bird=bird)
 
+@app.route('/compare' )
+def compare():
+
+    bird1 = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
+    bird2 = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
+
+
+    return render_template('compare.html', bird1=bird1, bird2 = bird2)
+
+
+@app.route('/admin')
+def admin():
+
+    return render_template('admin.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

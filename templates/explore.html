@@ -36,40 +36,6 @@
     }
 
 
-    function showMore(show_more_btn, more_panel)
-    {
-        let morePanel = document.getElementById(more_panel),
-            isPanelHidden = morePanel.classList.contains('hidden');
-        console.log(isPanelHidden)
-        if (isPanelHidden) {
-            morePanel.classList.remove('hidden');
-        }
-        else {
-            morePanel.classList.add('hidden');
-        }
-    }
-
-    function inputCustomSearch(input, more_panel){
-
-        let searchTerm = input.value.toLowerCase(),
-            morePanel = document.getElementById(more_panel),
-            isPanelHidden = morePanel.classList.contains('hidden'),
-            items = morePanel.querySelectorAll('div');
-        if (isPanelHidden) {
-            morePanel.classList.remove('hidden');
-        }
-        console.log(searchTerm)
-
-        items.forEach(item => {
-            const text = item.textContent.toLowerCase();
-            console.log(text)
-            if (text.includes(searchTerm)) {
-                item.classList.remove('hidden');
-            } else {
-                item.classList.add('hidden');
-            }
-        });
-    }
 
     function colorChip(color_option, color_chip_container){
         var colorData = color_option.dataset, colorCode = colorData.colorCode, colorName = colorData.colorName,
@@ -150,6 +116,7 @@
             colorChips.forEach(function(chip) {
                 // Extract RGB values from the computed background color
                 let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
+                console.log(chipColor)
                 chip.style.color = textColorFromHex(null, chipColor)
             })
         }
@@ -349,7 +316,9 @@
         <div class="w-full my-0.5 p-1 border bg-gray-50 max-h-[580px] overflow-y-auto" id="bird-list-panel">
             {% for bird in birds %}
                 <div class="relative w-full flex flex-row bg-white p-2 border rounded-md hover:bg-gray-100/70">
-                    <img src="{{url_for('static', filename='birds_list/passerine.jpg')}}" class="w-30 h-24 rounded-md" >
+                    <div class="w-40 h-24 items">
+                        <img src="{{url_for('static', filename='birds_list/'~bird['bird_img'][0])}}" class="w-full h-full object-cover rounded-md" >
+                    </div>
                     <div class="pl-5 flex flex-col">
                         <div>
                             <div class="text-xl">{{bird['bird_name']}}</div>
@@ -361,9 +330,9 @@
                         <div class="pt-3">
                             {% for b_color in bird['bird_color'] %}
                                 <div class="center relative inline-block select-none
-                                            whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans text-xs leading-none"
-                                     style="background: {{b_color}};" data-color-code="{{b_color}}">
-                                    {{b_color}}
+                                            border whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans text-xs leading-none"
+                                     style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
+                                    {{b_color[0]}}
                                 </div>
                             {% endfor %}
                         </div>

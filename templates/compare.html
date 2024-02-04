@@ -2,22 +2,127 @@
 {% block script %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const birdsListPanel = document.getElementById('bird-colors');
+        const bird1Colors = document.getElementById('bird1-colors'), bird2Colors = document.getElementById('bird2-colors');
 
-        if (birdsListPanel) {
-            var colorChips = birdsListPanel.querySelectorAll('[data-color-code]');
+        getTextColor(bird1Colors)
+        getTextColor(bird2Colors)
+    });
+
+    function getTextColor(birdColors){
+        if (birdColors) {
+            var colorChips = birdColors.querySelectorAll('[data-color-code]');
 
             colorChips.forEach(function(chip) {
-                // Extract RGB values from the computed background color
-                let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
+            let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
                 chip.style.color = textColorFromHex(null, chipColor)
             })
         }
-    });
+    }
 </script>
 {% endblock %}
 {% block title %} Compare {% endblock %}
-
 {% block content %}
-<div></div>
+<div class="text-xs text-gray-400 p-1 border-b border-gray-300"><a href="/explore">Compare</a>: {{bird1['bird_name']}} vs {{bird2['bird_name']}}</div>
+<div class="flex flex-row border-b border-gray-300" id="bird-compare-panel">
+
+    <!--  #bird-1  -->
+    <div class="w-1/2 border-r border-gray-400 p-4">
+        <img src="{{url_for('static', filename='birds_list/'~bird1['bird_img'][0])}}" class="h-80">
+        <hr class="my-3">
+        <div class="flex flex-col gap-1 pb-3">
+            <p class="text-3xl">{{bird1['bird_name']}}</p>
+            <p>Scientific Name - {{bird1['bird_sci_name']}}</p>
+            <p>Order - {{bird1['bird_order']}}</p>
+            <p>Family - {{bird1['bird_family']}}</p>
+            <div id="bird1-colors" class="w">Color -
+                {% for b_color in bird1['bird_color'] %}
+                    <div class="center relative inline-block select-none
+                                whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans leading-none"
+                         style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
+                        {{b_color[0]}}
+                    </div>
+                {% endfor %}
+            </div>
+            <p>Habitat - {% for b_habitat in bird1['bird_habitat'] %}{{b_habitat}}{% endfor %}</p>
+        </div>
+        <hr class="w-full">
+         <div class="text-base pt-2 pb-3">
+             <p class="text-xl">Biometric Features</p>
+             <div class="pl-4 pt-1">
+                 <p>Size - {{bird1['bird_char']['size']}}</p>
+                 <p>Wing - {{bird1['bird_char']['wing']}}</p>
+                 <p>Weight - {{bird1['bird_char']['weight']}}</p>
+             </div>
+         </div>
+        <hr>
+        <div class="pt-4">
+            <p class="text-2xl ">Description</p>
+            <p class="pt-4 text-justify">{{bird1['bird_desc']}}</p>
+        </div>
+        <hr class="my-4">
+        <div class="">
+            <p class="text-2xl">Distribution</p>
+            <p class="pt-4 text-justify">{{bird1['bird_distr']}}</p>
+        </div>
+        <hr class="my-4">
+        <div class="">
+            <p class="text-2xl">Ecology</p>
+            <p class="pt-4 text-justify">{{bird1['bird_eco']}}</p>
+        </div>
+        <hr class="my-4">
+    </div>
+
+    <!--  #bird-2  -->
+    <div class="w-1/2">
+        <div class="border-r border-gray-400 p-4">
+            <img src="{{url_for('static', filename='birds_list/'~bird1['bird_img'][0])}}" class="h-80">
+            <hr class="my-3">
+            <div class="flex flex-col gap-1 pb-3">
+                <p class="text-3xl">{{bird2['bird_name']}}</p>
+                <p>Scientific Name - {{bird2['bird_sci_name']}}</p>
+                <p>Order - {{bird2['bird_order']}}</p>
+                <p>Family - {{bird2['bird_family']}}</p>
+                <div id="bird2-colors" class="w">Color -
+                    {% for b_color in bird2['bird_color'] %}
+                        <div class="center relative inline-block select-none
+                                    whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans leading-none"
+                             style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
+                            {{b_color[0]}}
+                        </div>
+                    {% endfor %}
+                </div>
+                <p>Habitat - {% for b_habitat in bird2['bird_habitat'] %}{{b_habitat}}{% endfor %}</p>
+            </div>
+            <hr class="w-full">
+             <div class="text-base pt-2 pb-3">
+                 <p class="text-xl">Biometric Features</p>
+                 <div class="pl-4 pt-1">
+                     <p>Size - {{bird2['bird_char']['size']}}</p>
+                     <p>Wing - {{bird2['bird_char']['wing']}}</p>
+                     <p>Weight - {{bird2['bird_char']['weight']}}</p>
+                 </div>
+             </div>
+            <hr>
+            <div class="pt-4">
+                <p class="text-2xl ">Description</p>
+                <p class="pt-4 text-justify">{{bird2['bird_desc']}}</p>
+            </div>
+            <hr class="my-4">
+            <div class="">
+                <p class="text-2xl">Distribution</p>
+                <p class="pt-4 text-justify">{{bird2['bird_distr']}}</p>
+            </div>
+            <hr class="my-4">
+            <div class="">
+                <p class="text-2xl">Ecology</p>
+                <p class="pt-4 text-justify">{{bird2['bird_eco']}}</p>
+            </div>
+            <hr class="mt-4">
+        </div>
+    </div>
+</div>
+<button class=" m-4 py-2 px-4 text-xl rounded-md bg-gray-700 text-white border font-bold hover:bg-gray-50
+                hover:border-gray-700 hover:text-gray-700 hover:bg-gray-50" onclick="history.back()">
+    &lt; Back
+</button>
 {% endblock %}

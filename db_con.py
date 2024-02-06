@@ -25,8 +25,9 @@ class DBCon():
         data = pd.DataFrame(list(db.find(condition)))
         return data
 
-    def get_all_birds(self):
-        return self.load_data(self.__birds)
+    def get_bird_cols(self, cols_query):
+
+        return pd.DataFrame(list(self.__birds.find({}, cols_query)))
 
     def search_user(self, gmail, password):
         return self.__users.find_one({'user_gmail': gmail, 'user_pass': password})
@@ -51,18 +52,27 @@ if __name__ == '__main__':
     from app import app
 
     db_con = DBCon(app)
-    user = db_con.search_user('abcdefgh@gmail.com', '12345')
-    print(user)
-    print(user["_id"])
-    #birds = db_con.get_birds()
-    #print(birds)
-    #bird_id = birds.iloc[0]['_id']
-    #bird = db_con.search_bird(birds.iloc[0]['_id'])
-    #print(bird_id)
+    birds = db_con.get_bird_cols({"_id" : 1, "bird_name" : 1})
+    for habitat in db_con.get_unique_data(db_con.get_birds(), "bird_habitat"):
+        print(f"(\"{habitat},\" .jpg)")
+    print()
+    print()
+    for habitat in db_con.get_unique_data(db_con.get_birds(), "bird_order"):
+        print(f"(\"{habitat}\", \"{habitat}.jpg\"),")
 
-    #print(db_con.search_bird("65b767bd0418ddceb0fcb308"))
+    scale = db_con.get_unique_data(db_con.get_birds(),'bird_scale')
+    print(scale)
+    # birds = db_con.get_birds()
+    # print(birds)
+    # bird_id = birds.iloc[0]['_id']
+    # bird = db_con.search_bird(birds.iloc[0]['_id'])
+    # print(bird_id)
+
+    # print(db_con.search_bird("65b767bd0418ddceb0fcb308"))
 
 """
+{bird_color: {$elemMatch: { $elemMatch: { $eq: 'Green' }}}}
+
 
 def load_data(db, condition=None):
     data = pd.DataFrame(list(db.find(condition)))

@@ -177,27 +177,32 @@
                         <div class="w-full h-12 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
                         data-value="1" data-name="Ruby-crowned Kinglet" onclick=sizeChip(this,'size-chip-container')>
                             <img src="{{url_for('static', filename='birds_size/kinglet.png')}}" class="w-8 h-8 rounded-md" >
-                            <p class="text-sm pl-8">Ruby-crowned Kinglet </br> Length: 4.25in Width: 6.75 ~ 7.5in</p>
+                            <p class="text-sm pl-8">Ruby-crowned Kinglet </br> Length: 4.25 in, Width: 6.75 ~ 7.5in</p>
                         </div>
                         <div class="w-full h-12 flex flex-row items-center p-2 bg-white border rounded-md hover:bg-gray-100/70"
                             data-value="2" data-name="House Sparrow" onclick=sizeChip(this,'size-chip-container')>
                             <img src="{{url_for('static', filename='birds_size/sparrow.png')}}" class="w-10 h-10 rounded-md" >
-                            <p class="text-sm pl-6">House Sparrow</br>Length: 5.5 - 6.5 in Wingspan: 9.5 - 10 in</p>
+                            <p class="text-sm pl-6">House Sparrow</br>Length: 5.5 - 6.5 in, Wingspan: 9.5 - 10 in</p>
                         </div>
                         <div class="w-full h-12 flex flex-row items-center p-2 bg-white border rounded-md hover:bg-gray-100/70"
                             data-value="3" data-name="European Starling" onclick=sizeChip(this,'size-chip-container')>
                             <img src="{{url_for('static', filename='birds_size/starling.png')}}" class="w-11 h-11 rounded-md" >
-                            <p class="text-sm pl-5">European Starling</br>Length: 8.5 in Wingspan: 15.5 in</p>
+                            <p class="text-sm pl-5">European Starling</br>Length: 8.5 in, Wingspan: 15.5 in</p>
                         </div>
                         <div class="w-full h-12 flex flex-row items-center p-2 bg-white border rounded-md hover:bg-gray-100/70"
                             data-value="4" data-name="Ring-billed Gull" onclick=sizeChip(this,'size-chip-container')>
                             <img src="{{url_for('static', filename='birds_size/gull.png')}}" class="w-14 rounded-md" >
-                            <p class="text-sm pl-2">Ring-billed Gull</br>Length: 18-19 in Wingspan: 48 in</p>
+                            <p class="text-sm pl-2">Ring-billed Gull</br>Length: 18-19 in, Wingspan: 48 in</p>
                         </div>
                         <div class="w-full h-20 flex flex-row items-center p-4 bg-white border rounded-md hover:bg-gray-100/70"
                              data-value="5" data-name="Red-tailed-Hawk" onclick=sizeChip(this,'size-chip-container')>
                             <img src="{{url_for('static', filename='birds_size/hawk.png')}}" class="w-10 rounded-md" >
-                            <p class="text-sm pl-4">Red-tailed Hawk</br>Length: 19 - 25 in Wingspan: 46 - 58 in</p>
+                            <p class="text-sm pl-4">Red-tailed Hawk</br>Length: 19 - 25 in, Wingspan: 46 - 58 in</p>
+                        </div>
+                        <div class="w-full h-20 flex flex-row items-center p-4 bg-white border rounded-md hover:bg-gray-100/70"
+                             data-value="6" data-name="Blue-Heron" onclick=sizeChip(this,'size-chip-container')>
+                            <img src="{{url_for('static', filename='birds_size/blueheron.png')}}" class="w-16 rounded-md -ml-3 bg-cover" >
+                            <p class="text-sm pl-1 ">Great Blue Heron</br>Length: 37 - 54 in, Wingspan: 79 - 88 in</p>
                         </div>
                     </div>
                 </div>
@@ -225,7 +230,7 @@
                         {% for habitat in habitats %}
                         <div class="w-full h-16 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
                         data-color-code="{{habitat[1]}}" data-name="{{habitat[0]}}" onclick="habitatChip(this, 'habitat-chip-container')">
-                            <img src="{{url_for('static', filename=habitat[2])}}" class="w-20 rounded-md">
+                            <img src="{{url_for('static', filename='birds_habitat/'~habitat[2])}}" class="w-20 rounded-md">
                             <p class="text-sm p-y-2 px-5">{{habitat[0]}}</p>
                         </div>
                         {% endfor %}
@@ -255,7 +260,7 @@
                         {% for order in orders %}
                         <div class="w-full h-13 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
                              data-name="{{order[0]}}" onclick="orderChip(this, 'order-chip-container')">
-                            <img src="{{url_for('static', filename=order[1])}}" class="w-20 rounded-md">
+                            <img src="{{url_for('static', filename='birds_order/'~order[1])}}" class="w-20 rounded-md">
                             <p class="text-sm p-y-2 px-5">{{order[0]}}</p>
                         </div>
                         {% endfor %}

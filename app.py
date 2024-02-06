@@ -15,14 +15,14 @@ con = DBCon(app)
 
 @app.route('/')
 def index():
-    birds = con.get_all_birds().to_dict(orient='records')
+    birds = con.load_data(con.get_birds()).to_dict(orient='records')
     for bird in birds:
         bird['_id'] = str(bird['_id'])
 
     bird = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
 
-    #print(birds)
-    return render_template("admin.html", active_page='home', birds=birds, bird=bird)
+    # print(birds)
+    return render_template("index.html", active_page='home', birds=birds, bird=bird)
 
 
 @app.route('/map')
@@ -43,25 +43,55 @@ def get_birding_area():
 
 @app.route('/explore')
 def explore():
-    birds_data = con.get_all_birds()
+    birds = con.get_birds()
 
-    birds_search_list = birds_data[['_id', 'bird_name', 'bird_sci_name', 'bird_color', 'bird_img']].to_dict(orient='records')
+    birds_data = con.get_bird_cols({"_id": 1, "bird_name": 1, "bird_sci_name": 1, "bird_color": 1, "bird_img": 1})
+    colors = con.get_unique_data(birds, 'bird_color')
+    orders = con.get_unique_data(birds, 'bird_order')
 
-    birds = birds_search_list
+    habitats = [('Alkaline Lakes', "#EDD9D0", "akalinelake.webp"),
+                ('Coasts', "#FAD6A5", "coasts.jpg"),
+                ('Deserts', "#AE601F", "deserts.jpg"),
+                ('Forests', "#3D5435", "forests.jpg"),
+                ('Grasslands', "#9CD74E", "grasslands.jpg"),
+                ('Highlands', "#371C01", "highlands.jpg"),
+                ('Lakes', "#6EA4D3", "lakes.jpg"),
+                ('Marshes', "#525561", "marshes.jpg"),
+                ('Mountains', "#71716D", "mountains.jpg"),
+                ('Ocean', "#265873", "ocean.jpg"),
+                ('Reedbeds', "#8D6D44", "reedbed.webp"),
+                ('Rocky areas', "#AD987F", "rockyareas.png"),
+                ('Savannas', "#B57825", "savannas.jpg"),
+                ('Shrublands', "#A89C80", "shrublands.jpg"),
+                ('Wetlands', "#638A62", "wetlands.webp")
+                ]
 
-    colors = [("red", "#ff0000"), ("green", "#00ff00"), ("blue", "#0000ff"), ("yellow", "#ffff00"),
-              ("purple", "#800080"), ("cyan", "#00ffff"),
-              ("orange", "#ffa500"), ("asdfasdfasdfadsfasdfasdfasdf", "#ffffff")]
-
-    habitats = [('Forest', '#3D5435', 'birds_habitat/forest.jpg')] * 20
-
-    orders = [('Passerine', 'birds_order/passerine.jpg')]
+    orders = [("Accipitriformes", "Accipitriformes.jpg"),
+              ("Anseriformes", "Anseriformes.jpg"),
+              ("Apodiformes", "Apodiformes.jpg"),
+              ("Bucerotiformes", "Bucerotiformes.jpg"),
+              ("Charadriiformes", "Charadriiformes.jpg"),
+              ("Ciconiiformes", "Ciconiiformes.jpg"),
+              ("Coraciiformes", "Coraciiformes.jpeg"),
+              ("Cuculiformes", "Cuculiformes.jpeg"),
+              ("Falconiformes", "Falconiformes.jpg"),
+              ("Galliformes", "Galliformes.jpg"),
+              ("Gruiformes", "Gruiformes.jpeg"),
+              ("Passeriformes", "Passeriformes.jpeg"),
+              ("Pelecaniformes", "Pelecaniformes.jpg"),
+              ("Phoenicopteriformes", "Phoenicopteriformes.jpeg"),
+              ("Piciformes", "Piciformes.jpg"),
+              ("Podicipediformes", "Podicipediformes.jpg"),
+              ("Procellariiformes", "Procellariiformes.jpg"),
+              ("Psittaciformes", "Psittaciformes.jpg"),
+              ("Strigiformes", "Strigiformes.jpg"),
+              ("Suliformes", "Suliformes.jpg")]
 
     # birds = [('ABBOTTS BABBLER', 'birds_list/passerine.jpg')]
 
     # print(habitats)
     return render_template("explore.html", active_page='explore', colors=colors, habitats=habitats, orders=orders,
-                           birds=birds)
+                           birds=birds_data.to_dict('records'))
 
 
 @app.route('/bird_detail', methods=['POST', 'GET'])
@@ -71,20 +101,19 @@ def bird_detail():
 
     return render_template("detail.html", bird=bird)
 
-@app.route('/compare' )
-def compare():
 
+@app.route('/compare')
+def compare():
     bird1 = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
     bird2 = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
 
-
-    return render_template('compare.html', bird1=bird1, bird2 = bird2)
+    return render_template('compare.html', bird1=bird1, bird2=bird2)
 
 
 @app.route('/admin')
 def admin():
-
     return render_template('admin.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

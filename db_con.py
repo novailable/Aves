@@ -25,9 +25,9 @@ class DBCon():
         data = pd.DataFrame(list(db.find(condition)))
         return data
 
-    def get_bird_cols(self, cols_query):
+    def get_bird_cols(self, condition, cols_query):
 
-        return pd.DataFrame(list(self.__birds.find({}, cols_query)))
+        return pd.DataFrame(list(self.__birds.find(condition, cols_query)))
 
     def search_user(self, gmail, password):
         return self.__users.find_one({'user_gmail': gmail, 'user_pass': password})
@@ -47,12 +47,19 @@ class DBCon():
         user_oid = user.iloc[0]['_id']
         self.__users.update_one({'_id': user_oid}, {'$pull': {'user_find': {"bird_id": bird_oid}}})
 
+    def test(self):
+        print(list(self.__birds.find(
+            {'$and': [{'bird_color.color_name': {'$in': ['Black']}}, {'bird_habitat': {'$in': ['Ocean']}}, {'bird_scale': 6}, {'bird_order': 'Procellariiformes'}]},
+            {'_id': 1, 'bird_name': 1, 'bird_sci_name': 1, 'bird_color': 1, 'bird_img' : 1})
+))
+
+
 
 if __name__ == '__main__':
     from app import app
 
     db_con = DBCon(app)
-    birds = db_con.get_bird_cols({"_id" : 1, "bird_name" : 1})
+    """birds = db_con.get_bird_cols({"_id" : 1, "bird_name" : 1})
     for habitat in db_con.get_unique_data(db_con.get_birds(), "bird_habitat"):
         print(f"(\"{habitat},\" .jpg)")
     print()
@@ -62,6 +69,10 @@ if __name__ == '__main__':
 
     scale = db_con.get_unique_data(db_con.get_birds(),'bird_scale')
     print(scale)
+
+    print()
+"""
+    db_con.test()
     # birds = db_con.get_birds()
     # print(birds)
     # bird_id = birds.iloc[0]['_id']
@@ -116,4 +127,15 @@ print(birds_data)
 # insert_user_find(user, bird_id)
 # change_user_find_fav(user_id, bird_id, fav=False)
 
+
+{'$and': [{
+      "bird_color.color_name": {
+        "$all": ["Black", "Red"]
+      }
+    },
+    {
+      "bird_scale": 2
+    }
+  ]
+}
 """

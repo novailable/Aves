@@ -45,7 +45,7 @@ def get_birding_area():
 def explore():
     birds = con.get_birds()
 
-    birds_data = con.get_bird_cols({"_id": 1, "bird_name": 1, "bird_sci_name": 1, "bird_color": 1, "bird_img": 1})
+    birds_data = con.get_bird_cols({}, {"_id": 1, "bird_name": 1, "bird_sci_name": 1, "bird_color": 1, "bird_img": 1})
     colors = con.get_unique_data(birds, 'bird_color')
     orders = con.get_unique_data(birds, 'bird_order')
 
@@ -94,9 +94,9 @@ def explore():
                            birds=birds_data.to_dict('records'))
 
 
-@app.route('/bird_detail', methods=['POST', 'GET'])
+@app.route('/bird_detail', methods=['GET'])
 def bird_detail():
-    bird_id = request.form.get('bird_id')
+    bird_id = request.args.get('bird_id')
     bird = con.search_bird({"_id": ObjectId(bird_id)})
 
     return render_template("detail.html", bird=bird)
@@ -104,10 +104,53 @@ def bird_detail():
 
 @app.route('/compare')
 def compare():
-    bird1 = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
-    bird2 = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
+    bird1_id = request.args.get('bird1_id')
+    bird2_id = request.args.get('bird2_id')
+    bird1 = con.search_bird({"_id": ObjectId(bird1_id)})
+    bird2 = con.search_bird({"_id": ObjectId(bird2_id)})
 
     return render_template('compare.html', bird1=bird1, bird2=bird2)
+
+
+@app.route('/filter', methods=['POST', 'GET'])
+def filter():
+    data = request.get_json()
+    color = data.get('color')
+    size = data.get('size')
+    habitat = data.get('habitat')
+    order = data.get('order')
+    query_part = []
+    birds = ""
+
+    # {'$and' : [ { 'bird_color.color_name' : { '$in' : ['Red'] } }, {'bird_habitat' : { '$in' : ['habitat']}, {'bird_size' : 4 }, {'bird_order' : 'order'}]}
+    if color:
+        query_part.append({'bird_color.color_name': {'$in': color}})
+
+    if habitat:
+        query_part.append({'bird_habitat': {'$in': habitat}})
+
+    if size:
+        query_part.append({'bird_scale': int(size[0])})
+
+    if order:
+        query_part.append({'bird_order': order[0]})
+
+    query = {'$and': query_part}
+    cols = {'_id': 1, 'bird_name': 1, 'bird_sci_name': 1, 'bird_color': 1, 'bird_img': 1}
+
+    if query_part:
+        birds = con.get_bird_cols(query, cols)
+        if not birds.empty:
+            birds['_id'] = birds['_id'].astype(str)
+            birds = birds.to_dict(orient='records')
+        else:
+            birds = ""
+    else:
+        birds = con.get_bird_cols({}, cols)
+        birds['_id'] = birds['_id'].astype(str)
+        birds = birds.to_dict(orient='records')
+
+    return jsonify(birds)
 
 
 @app.route('/admin')

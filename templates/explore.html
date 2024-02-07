@@ -2,10 +2,77 @@
 {% block script %}
 <script>
 
+    birdColor = []
+    birdHabitat = []
+    birdSize = []
+    birdOrder = []
+    function fetchData(url, value){
 
-    function chipCreation(chip_container, color_code, text){
+        let item = { color : [], size: [], habitat : [], order : 0}
+        fetch(url,{
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify(value)
+        })
+            .then(response => response.json())
+            .then(data => {
+                updateBirdList(data)
+            })
+    }
 
-        let chipContainer = document.getElementById(chip_container),
+    function updateBirdList(birds) {
+
+        const birdListPanel = document.getElementById('bird-list-panel');
+        birdListPanel.innerHTML = ''; // Clear existing content
+
+        if (birds) {
+            birds.forEach(bird => {
+                // Create HTML elements for each bird and append them to birdListPanel
+                const birdElement = document.createElement('div');
+                birdElement.classList.add('relative', 'w-full', 'flex', 'flex-row', 'bg-white', 'p-2', 'border', 'rounded-md', 'hover:bg-gray-100/70');
+                birdElement.setAttribute('data-bird-item', "true");
+                // Create HTML structure for displaying bird details (name, scientific name, colors, etc.)
+                // You can customize this based on your specific requirements
+                birdElement.innerHTML = `
+                    <div class="w-40 h-24 items">
+                        <img src="/static/birds_list/${bird.bird_img[0]}" class="w-full h-full object-cover rounded-md">
+                    </div>
+                    <div class="pl-5 flex flex-col">
+                        <div>
+                            <div class="text-xl" data-bird-name="true">${bird.bird_name}</div>
+                            <div class="text-sm" data-bird-sci-name="true">${bird.bird_sci_name}</div>
+                        </div>
+                        <div class="pt-3">${bird.bird_color.map(color => {
+                    const textColor = textColorFromHex(color.color_code, null);
+                    return `<div class="center relative inline-block border whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans text-xs leading-none" style="background: ${color.color_code}; color: ${textColor};">${color.color_name}</div>`;
+                }).join('')}
+                        </div>
+                    </div>
+                    <div class="absolute right-2.5 bottom-3 flex flex-row gap-0.5">
+                        <button class="bg-gray-700 text-white border font-bold hover:border-gray-700 hover:text-gray-700 hover:bg-gray-50 py-1.5 px-2 text-xs rounded-md" onclick="compareBird(this, '${bird.bird_name}', '${bird._id}')">Compare</button>
+                        <form action="/bird_detail" data-detail-form="true" method="POST">
+                            <input type="hidden" name="bird_id" value="${bird._id}">
+                            <button type="submit" class="bg-gray-700 text-white border font-bold enabled:hover:bg-gray-50 hover:border-gray-700 hover:text-gray-700 hover:bg-gray-700 py-1.5 px-2 text-xs rounded-md">Detail</button>
+                        </form>
+                    </div>
+                `;
+                 birdElement.addEventListener('click', function() {
+                     detailSubmit(this);
+                 });
+                birdListPanel.appendChild(birdElement);
+            });
+        }else
+        {
+            birdListPanel.innerHTML = `<p class="text-xl text-center">The results not found!</p>`
+        }
+    }
+
+    function chipCreation(chip_container, color_code, text, value){
+
+        const containerCheck = {"color-chip-container" : birdColor, "habitat-chip-container" : birdHabitat,
+            "size-chip-container" : birdSize, "order-chip-container" : birdOrder}
+
+        const chipContainer = document.getElementById(chip_container),
             chip = document.createElement('div'),
             chipText = document.createElement('p'),
             chipButton = document.createElement('button'),
@@ -30,71 +97,109 @@
 
         chipContainer.appendChild(chip);
 
+        let valueArray = containerCheck[chip_container]
+        if (valueArray)
+        {
+            valueArray.push(value)
+        }
+
+        let data = {color: birdColor, size : birdSize, habitat : birdHabitat, order : birdOrder}
+        fetchData("/filter", data)
+
         chipButton.addEventListener('click', () =>{
+
+            arrayValueRemove(valueArray, value)
+            fetchData("/filter", data)
             chipContainer.removeChild(chip);
         });
     }
 
-
-
     function colorChip(color_option, color_chip_container){
-        var colorData = color_option.dataset, colorCode = colorData.colorCode, colorName = colorData.colorName,
+        const colorData = color_option.dataset, colorCode = colorData.colorCode, colorName = colorData.colorName,
             colorMorePanel = document.getElementById('color-more-panel'), colorInput = document.getElementById('color-input');
 
-        console.log(colorCode, colorName)
-        chipCreation(color_chip_container, colorCode, colorName )
-        colorInput.value = colorName
+        chipCreation(color_chip_container, colorCode, colorName, colorName)
+        colorInput.value= null
         colorMorePanel.classList.add('hidden');
     }
 
     function sizeChip(size_option, size_chip_container) {
-        let birdName = size_option.dataset.name,
-            birdValue = size_option.dataset.value,
-            sizeInput = document.getElementById('size_input'),
-            sizeMorePanel = document.getElementById('size-more-panel');
+        const birdName = size_option.dataset.name,
+            sizeValue = size_option.dataset.value,
+            sizeInput = document.getElementById('size-input'),
+            sizeMorePanel = document.getElementById('size-more-panel'),
+            sizeChipContainer = document.getElementById("size-chip-container"),
+            chipCount = sizeChipContainer.querySelectorAll('button');
 
-        chipCreation(size_chip_container, '#374151', birdName);
-        sizeInput.value = birdName;
+        if (chipCount.length){
+
+            chipCount[0].click()
+            chipCreation(size_chip_container, '#374151', birdName, sizeValue);
+        }else
+        {
+            chipCreation(size_chip_container, '#374151', birdName, sizeValue);
+        }
+        sizeInput.value = null
         sizeMorePanel.classList.add('hidden');
 
+        //fetchData('/filter', value)
     }
 
     function habitatChip(habitat_option, habitat_chip_container){
-        let habitatName = habitat_option.dataset.name, habitatColor = habitat_option.dataset.colorCode,
+        const habitatName = habitat_option.dataset.name, habitatColor = habitat_option.dataset.colorCode,
             habitatInput = document.getElementById('habit-input'),
             habitatMorePanel = document.getElementById('habitat-more-panel')
 
-        chipCreation(habitat_chip_container, habitatColor, habitatName)
-        habitatInput.value = habitatName
+        chipCreation(habitat_chip_container, habitatColor, habitatName, habitatName)
         habitatMorePanel.classList.add('hidden');
+        habitatInput.value = null
+        //birdHabitat.push(habitatName)
+        //fetchData('/filter', {bird_habitat: birdHabitat})
     }
 
     function orderChip(order_option, order_chip_container){
-        let orderName = order_option.dataset.name,
+        const orderName = order_option.dataset.name,
             orderInput = document.getElementById('order-input'),
-            orderMorePanel = document.getElementById('order-more-panel')
+            orderMorePanel = document.getElementById('order-more-panel'),
+            orderChipContainer = document.getElementById('order-chip-container'),
+            chipCount = orderChipContainer.querySelectorAll('button');
 
-        chipCreation(order_chip_container, '#9F9286', orderName)
-        orderInput.value = ordertName
+        if (chipCount.length){
+            chipCount[0].click()
+            chipCreation(order_chip_container, '#9F9286', orderName, orderName)
+        }else
+        {
+            chipCreation(order_chip_container, '#9F9286', orderName, orderName)
+        }
+        orderInput.value = null
         orderMorePanel.classList.add('hidden');
+        //fetchData('/filter', {bird_order: orderName})
     }
 
 
 
-    function compareBird(compare_btn, bird_name, bird_id) {
-        let compareBirdOne = document.getElementById("compare-bird-1"),
+    function compareBird(compare_btn, bird_name, bird_id, event) {
+
+        event.stopPropagation()
+        const compareBirdOne = document.getElementById("compare-bird-1"),
             compareBirdTwo = document.getElementById("compare-bird-2"),
             birdOneText = compareBirdOne.querySelector('p'),
             birdTwoText = compareBirdTwo.querySelector('p'),
             vsText = document.getElementById("compare-vs-text"),
-            compareSubBtn = document.getElementById("compare-submit");
+            compareSubBtn = document.getElementById("compare-submit"),
+            bird1Input = document.getElementById("bird1_id"),
+            bird2Input = document.getElementById("bird2_id")
+
 
         if (birdOneText.textContent) {
             birdTwoText.textContent = bird_name;
+            bird2Input.value = bird_id
+            vsText.classList.remove('hidden')
             compareBirdTwo.classList.remove('hidden');
         } else {
             birdOneText.textContent = bird_name;
             vsText.classList.remove('hidden');
+            bird1Input.value = bird_id
             compareBirdOne.classList.remove('hidden');
         }
 
@@ -103,9 +208,54 @@
         }
     }
 
+    function compareExit(compare_chip_element) {
+
+        const compareCElement = document.getElementById(compare_chip_element),
+            compareCText = compareCElement.querySelector('p'), vsText =document.getElementById('compare-vs-text'),
+            compareBtn = document.getElementById('compare-submit')
+
+        compareCText.textContent = "";
+        compareCElement.classList.add('hidden')
+        if (!vsText.classList.contains("hidden"))
+        {
+            vsText.classList.add('hidden')
+        }
+
+        if (!compareBtn.classList.contains("hidden"))
+        {
+            compareBtn.classList.add('hidden')
+        }
+
+    }
+
+    function bNameInputSearch(input, more_panel){
+
+        let searchTerm = input.value.toLowerCase(),
+            morePanel = document.getElementById(more_panel),
+            items = morePanel.querySelectorAll('[data-bird-item]');
+
+        console.log(items)
+
+        items.forEach(item => {
+            const name = item.querySelector('[data-bird-name]').textContent.toLowerCase();
+            const sciName = item.querySelector('[data-bird-sci-name]').textContent.toLowerCase();
+            if (name.includes(searchTerm) || sciName.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
 
 
-    //    #bird-list-color-change
+    function detailSubmit(birdlist_panel){
+        const detailForm = birdlist_panel.querySelector('[data-detail-form]')
+        detailForm.submit();
+    }
+
+
+
+    //    #bird-list-text-color-change
 
     document.addEventListener('DOMContentLoaded', function() {
         const birdsListPanel = document.getElementById('bird-list-panel');
@@ -116,8 +266,7 @@
             colorChips.forEach(function(chip) {
                 // Extract RGB values from the computed background color
                 let chipColor = chip.style.backgroundColor.match(/\b(\d{1,3})\b/g).map(Number);
-                console.log(chipColor)
-                chip.style.color = textColorFromHex(null, chipColor)
+                chip.style.color = textColorFromHex(null, chipColor);
             })
         }
     });
@@ -147,9 +296,9 @@
                     <div class="absolute z-10 w-full my-0.5 p-1 border bg-gray-50 max-h-80 overflow-y-auto hidden" id="color-more-panel">
                         {% for color in colors %}
                         <div class="w-full h-10 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
-                        data-color-code="{{color[1]}}" data-color-name="{{color[0]}}" onclick="colorChip(this, 'color-chip-container')">
-                            <p class="w-10 h-6 border border-gray-300" style="background: {{color[1]}}"></p>
-                            <p class="text-sm p-y-2 px-5 uppercase">{{color[0]}}</p>
+                        data-color-code="{{color['color_code']}}" data-color-name="{{color['color_name']}}" onclick="colorChip(this, 'color-chip-container')">
+                            <p class="w-10 h-6 border border-gray-300" style="background: {{color['color_code']}}"></p>
+                            <p class="text-sm p-y-2 px-5 uppercase">{{color['color_name']}}</p>
                         </div>
                         {% endfor %}
                     </div>
@@ -167,7 +316,7 @@
             </div>
             <div class="w-full">
                 <div class="relative" id="size-dropdown">
-                    <input type="input" id="size_input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with size" oninput="inputCustomSearch(this, 'size-more-panel')">
+                    <input type="input" id="size-input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with size" oninput="inputCustomSearch(this, 'size-more-panel')">
                         <button class="absolute right-2 top-1 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'size-more-panel')">
                             <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -202,7 +351,7 @@
                         <div class="w-full h-20 flex flex-row items-center p-4 bg-white border rounded-md hover:bg-gray-100/70"
                              data-value="6" data-name="Blue-Heron" onclick=sizeChip(this,'size-chip-container')>
                             <img src="{{url_for('static', filename='birds_size/blueheron.png')}}" class="w-16 rounded-md -ml-3 bg-cover" >
-                            <p class="text-sm pl-1 ">Great Blue Heron</br>Length: 37 - 54 in, Wingspan: 79 - 88 in</p>
+                            <p class="text-sm pl-1">Great Blue Heron</br>Length: 37 - 54 in, Wingspan: 79 - 88 in</p>
                         </div>
                     </div>
                 </div>
@@ -220,7 +369,7 @@
             </div>
             <div class="w-full">
                 <div class="relative w-full" id="habitat-dropdown">
-                    <input type="text" id="habit-input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with habitats" oninput="inputCustomSearch(this, 'habit-more-panel')">
+                    <input type="text" id="habit-input" class="w-full border border-gray-400 rounded-md pl-3 h-9" placeholder="Search with habitats" oninput="inputCustomSearch(this, 'habitat-more-panel')">
                     <button class="absolute right-2 top-1 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'habitat-more-panel')">
                         <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -269,25 +418,27 @@
             </div>
         </div>
 
-        <!--  #comparsion  -->
+        <!--  #compare  -->
 
         <hr class="mt-5 mb-2">
 
         <div>
             <p class=" font-simple text-xl py-3">Comparison</p>
-            <form class="" id="compare-form">
+            <form action="/compare" id="compare-form" method="get">
                 <div id="compare-chip-container" class="w-full mb-2 flex gap-1 flex-wrap items-center">
                     <div id="compare-bird-1" class="hidden center border border-gray-300 rounded-md bg-gray-100/70 relative inline-block select-none whitespace-nowrap rounded-lg py-2 px-2.5 align-baseline font-sans text-base font-bold leading-none">
                         <p class="mr-5"></p>
-                        <button class="h-5 w-5 absolute top-1.5 right-1 rounded-md transition-colors hover:bg-gray-700 hover:border-gray-900 hover:text-gray-200">&times;</button>
+                        <div id="compare1-exit" class="h-5 w-5 absolute top-1.5 right-1 rounded-md transition-colors hover:bg-gray-700 hover:border-gray-900 hover:text-gray-200 text-center" onclick="compareExit('compare-bird-1')">&times;</div>
                     </div>
                     <p id="compare-vs-text" class="hidden text-xl font-bold px-3">Vs</p>
                     <div id="compare-bird-2" class="hidden center border border-gray-300 rounded-md bg-gray-100/70 relative inline-block select-none whitespace-nowrap rounded-lg py-2 px-2.5 align-baseline font-sans text-base font-bold leading-none">
                         <p class="mr-5"></p>
-                        <button class="h-5 w-5 absolute top-1.5 right-1 rounded-md transition-colors hover:bg-gray-700 hover:border-gray-900 hover:text-gray-200">&times;</button>
+                        <div id="compare2-exit" class="h-5 w-5 absolute top-1.5 right-1 rounded-md transition-colors hover:bg-gray-700 hover:border-gray-900 hover:text-gray-200 text-center" onclick="compareExit('compare-bird-2')" >&times;</div>
                     </div>
-
                 </div>
+
+                <input type="hidden" name="bird1_id" id="bird1_id">
+                <input type="hidden" name="bird2_id" id="bird2_id">
                 <button type="submit" id="compare-submit" class="hidden bg-gray-700 text-white border font-bold enabled:hover:bg-gray-50
                                        hover:border-gray-700 hover:text-gray-700 hover:bg-gray-700 py-1.5 px-2 text-base rounded-md">Compare</button>
             </form>
@@ -304,30 +455,22 @@
     <div class=" col-start-2 col-span-2">
         <div class="relative w-full mr-4">
             <input class="w-full pl-8 pr-3 py-2 border-b focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-500 transition-shadow"
-                   placeholder="Search Bird by Name..."
+                   placeholder="Search Bird by Name..." oninput="bNameInputSearch(this, 'bird-list-panel')"
                    type="text">
-            <button class="absolute right-2 top-0 mt-2 mr-2 pl-2 border-l border-gray-700" type="submit">
-                <svg class="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 20 20"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          fill-rule="evenodd"></path>
-                </svg>
-            </button>
         </div>
 
         <!--  #bird-list  -->
 
         <div class="w-full my-0.5 p-1 border bg-gray-50 max-h-[580px] overflow-y-auto" id="bird-list-panel">
             {% for bird in birds %}
-                <div class="relative w-full flex flex-row bg-white p-2 border rounded-md hover:bg-gray-100/70">
+                <div class="relative w-full flex flex-row bg-white p-2 border rounded-md hover:bg-gray-100/70" data-bird-item="true" onclick="detailSubmit(this)">
                     <div class="w-40 h-24 items">
                         <img src="{{url_for('static', filename='birds_list/'~bird['bird_img'][0])}}" class="w-full h-full object-cover rounded-md" >
                     </div>
                     <div class="pl-5 flex flex-col">
                         <div>
-                            <div class="text-xl">{{bird['bird_name']}}</div>
-                            <div class="text-sm">{{bird['bird_sci_name']}}</div>
+                            <div class="text-xl" data-bird-name="true">{{bird['bird_name']}}</div>
+                            <div class="text-sm" data-bird-sci-name="true">{{bird['bird_sci_name']}}</div>
                         </div>
 
                         <!--  #bird-list-color  -->
@@ -336,18 +479,18 @@
                             {% for b_color in bird['bird_color'] %}
                                 <div class="center relative inline-block select-none
                                             border whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans text-xs leading-none"
-                                     style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
-                                    {{b_color[0]}}
+                                     style="background: {{b_color['color_code']}};" data-color-code="{{b_color['color_code']}}">
+                                    {{b_color['color_name']}}
                                 </div>
                             {% endfor %}
                         </div>
                     </div>
                     <div class="absolute right-2.5 bottom-3 flex flex-row gap-0.5">
                         <button class="bg-gray-700 text-white border font-bold
-                                       hover:border-gray-700 hover:text-gray-700 hover:bg-gray-50 py-1.5 px-2 text-xs rounded-md" onclick="compareBird(this, '{{ bird['bird_name'] }}', '{{ bird['_id'] }}')">
+                                       hover:border-gray-700 hover:text-gray-700 hover:bg-gray-50 py-1.5 px-2 text-xs rounded-md" onclick="compareBird(this, '{{ bird['bird_name'] }}', '{{ bird['_id'] }}', event)">
                                 Compare
                         </button>
-                        <form action="/bird_detail" method="POST">
+                        <form action="/bird_detail" method="GET" data-detail-form ="true">
                             <!--  #send-bird-id-4-detail  -->
                             <input type="hidden" name="bird_id" value="{{ bird['_id'] }}">
                             <button type="submit" class="bg-gray-700 text-white border font-bold enabled:hover:bg-gray-50

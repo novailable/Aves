@@ -30,8 +30,8 @@
                 {% for b_color in bird['bird_color'] %}
                     <div class="center relative inline-block select-none
                                 whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans leading-none border"
-                         style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
-                        {{b_color[0]}}
+                         style="background: {{b_color['color_code']}};" data-color-code="{{b_color['color_code']}}">
+                        {{b_color['color_name']}}
                     </div>
                 {% endfor %}
             </div>

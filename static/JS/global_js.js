@@ -30,7 +30,6 @@ function showMore(show_more_btn, more_panel) {
 
     let morePanel = document.getElementById(more_panel),
         isPanelHidden = morePanel.classList.contains('hidden');
-    console.log(isPanelHidden)
     if (isPanelHidden) {
         morePanel.classList.remove('hidden');
     }
@@ -48,11 +47,9 @@ function inputCustomSearch(input, more_panel){
     if (isPanelHidden) {
         morePanel.classList.remove('hidden');
     }
-    console.log(searchTerm)
 
     items.forEach(item => {
         const text = item.textContent.toLowerCase();
-        console.log(text)
         if (text.includes(searchTerm)) {
             item.classList.remove('hidden');
         } else {
@@ -60,3 +57,12 @@ function inputCustomSearch(input, more_panel){
         }
     });
 }
+
+function arrayValueRemove(array, value){
+
+        let index = array.indexOf(value)
+
+        if (index !== -1) {
+            array.splice(index, 1);
+        }
+    }

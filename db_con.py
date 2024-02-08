@@ -26,7 +26,6 @@ class DBCon():
         return data
 
     def get_bird_cols(self, condition, cols_query):
-
         return pd.DataFrame(list(self.__birds.find(condition, cols_query)))
 
     def search_user(self, gmail, password):
@@ -49,16 +48,25 @@ class DBCon():
 
     def test(self):
         print(list(self.__birds.find(
-            {'$and': [{'bird_color.color_name': {'$in': ['Black']}}, {'bird_habitat': {'$in': ['Ocean']}}, {'bird_scale': 6}, {'bird_order': 'Procellariiformes'}]},
-            {'_id': 1, 'bird_name': 1, 'bird_sci_name': 1, 'bird_color': 1, 'bird_img' : 1})
-))
+            {'$and': [{'bird_color.color_name': {'$in': ['Black']}}, {'bird_habitat': {'$in': ['Ocean']}},
+                      {'bird_scale': 6}, {'bird_order': 'Procellariiformes'}]},
+            {'_id': 1, 'bird_name': 1, 'bird_sci_name': 1, 'bird_color': 1, 'bird_img': 1})
+        ))
 
+    def update_bird_popularity(self, _id):
+        self.__birds.update_one({'_id': _id}, {'$inc': {'popularity': 1}})
+        # users.update_one({'_id': user_oid}, {'$push': {'user_find': {'bird_id': bird_oid, 'fav': False}}})
+
+    def get_popular_birds(self):
+        return pd.DataFrame(list(self.__birds.find({}, {"_id": 1, "bird_name": 1, "bird_img": 1}).sort("popularity", -1).limit(6)))
 
 
 if __name__ == '__main__':
     from app import app
 
     db_con = DBCon(app)
+    popu = db_con.get_popular_birds()
+    print(popu)
     """birds = db_con.get_bird_cols({"_id" : 1, "bird_name" : 1})
     for habitat in db_con.get_unique_data(db_con.get_birds(), "bird_habitat"):
         print(f"(\"{habitat},\" .jpg)")
@@ -72,7 +80,7 @@ if __name__ == '__main__':
 
     print()
 """
-    db_con.test()
+    # db_con.update_bird_popularity()
     # birds = db_con.get_birds()
     # print(birds)
     # bird_id = birds.iloc[0]['_id']

@@ -1,46 +1,52 @@
 {% extends "zero.html" %}
-{% block script %}{%endblock%}
+{% block script %}
+{% endblock %}
+
 {% block title %} Home {% endblock %}
 {% block content %}
 <div class="container mx-auto bg-[url('https://www.freewebheaders.com/wp-content/gallery/birds/awesome-colorful-macaw-bird-website-header.jpg')]
             h-56 w-full rounded-lg grid grid-cols-3">
     <div class="col-span-2 flex flex-col justify-center items-center">
-        <a class="text-5xl text-gray-50" href="#">Discover Birds with Photo</a>
+        <div class="text-5xl text-gray-50">Discover Birds with Photo</div>
         <span class="mt-4 text-xl text-gray-50">Find detailed information about various bird species!</span>
     </div>
 </div>
-<section class="container mx-auto pb-4 grid grid-cols-2 mb-10 gap-8">
+<section class="container mx-auto grid grid-cols-2 mb-5 gap-8">
     <div>
-        <h1 class="py-8 text-5xl font-sans">Bird Identification</h1>
+        <h1 class="pb-8 pt-5 text-5xl font-sans">Bird Identification</h1>
         <p class="text-2xl">Update your bird game effortlessly.</p>
         <p class="text-2xl">Boost your knowledge with <b>AI</b> avian expert.</p>
-        <hr class="my-10">
-        <div class="flex flex-col mt-10">
-            <div class="rounded-full w-full">
-                <div class="relative w-full mr-4">
-                    <input class="w-full rounded-full pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-500 transition-shadow"
-                           placeholder="Search Bird by Name..."
-                           type="text">
-                    <button class="absolute right-0 top-0 mt-2 mr-2" type="submit">
-                        <svg class="w-6 h-6 text-gray-900 border-l" fill="currentColor" viewBox="0 0 20 20"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path clip-rule="evenodd"
-                                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                  fill-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
+        <hr class="mt-5">
+        <div class="flex flex-col">
         </div>
-        <div class=" py-8 text-3xl flex justify-between">Or use advanced filters
-            <button class="bg-gray-900 rounded-md text-gray-50 text-sm p-2.5 py-1">
-                Advanced Filters
-            </button>
+        <!--<div class=" py-8 text-3xl flex justify-between items-center">Or use advanced filters
+            <a href="{{url_for('explore')}}" class="bg-gray-900 hover:bg-gray-50 hover:border-gray-700 hover:text-gray-700 border rounded-md text-gray-50 text-sm py-1.5 px-2.5">Advanced Filters</a>
+        </div>-->
+        <div class="mb-6 pt-4">
+            <label class="mb-3 block text-xl font-semibold text-[#07074D]">
+              Upload File
+            </label>
+
+            <div class="mb-8 border border-dashed border-[#e0e0e0]" id="drop-area">
+                <input type="file" name="file" id="file-input" class="sr-only" />
+                <label for="file-input" class="relative flex items-center justify-center rounded-md p-14 text-center">
+                <div>
+                    <span class="mb-2 block text-xl font-semibold text-[#07074D]">
+                        Drop files here
+                    </span>
+                    <span class="mb-2 block text-base font-medium text-[#6B7280]">
+                        Or
+                    </span>
+                    <span class="inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]">
+                        Browse
+                    </span>
+                </div>
+                </label>
+            </div>
         </div>
     </div>
 
-
-    <div class="place-items-center my-4">
+    <div class="place-items-center my-5">
         <!--<div class="rounded-full w-full">
             <div class="relative w-full mr-4 rounded-full">
                 <input type="text" class="w-full rounded-full pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-gray-500 transition-shadow" placeholder="Search...">
@@ -49,68 +55,94 @@
                 </button>
             </div>
         </div>-->
-
-        <div class="border-dotted border-4 p-6 rounded-xl flex flex-col items-center justify-center w-full">
-
-            <div class="w-64 h-64">
-                <!--
-                https://cdn.pixabay.com/photo/2019/09/18/10/39/victoria-crowned-pigeon-4486154_1280.jpg
-                {{url_for('static', filename=logo_path~'new_upload.svg')}} -->
-                <img alt="stack-of-photos--v1" class="p-2 w-full h-full object-contain"
-                     src="{{url_for('static', filename=logo_path~'new_upload.svg')}}"/>
+        <div class="relative w-full mb-3" id="bird-dropdown">
+            <input type="text" id="bird-input" class="w-full border border-gray-400 rounded-md pl-3 h-14" placeholder="Search with orders" oninput="inputCustomSearch(this, 'birds-more-panel')">
+            <button class="absolute top-3 right-2.5 w-7 h-7 rounded-md border rounded-md border-gray-300" onclick="showMore(this,'birds-more-panel')">
+                <svg class="-mr-1 w-full h-full text-gray-700 rounded-md hover:bg-gray-700 hover:text-gray-50" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div class="absolute z-[31] w-full my-0.5 p-1 border bg-gray-50 max-h-96 overflow-y-auto rounded-md hidden" id="birds-more-panel">
+                {% for bird in birds %}
+                    <form action="/bird_detail" method="get">
+                        <input type="hidden" value="{{bird._id}}" name="bird_id">
+                        <button class="w-full h-13 flex flex-row items-center bg-white p-2 border rounded-md hover:bg-gray-100/70"
+                             data-name="{{bird.bird_name}}" type="submit">
+                            <img src="{{url_for('static', filename='birds_list/'~bird.bird_img[0])}}" class="w-20 object-cover rounded-md">
+                            <p class="text-sm p-y-2 px-5">{{bird.bird_name}}</p>
+                        </button>
+                    </form>
+                {% endfor %}
             </div>
-            <button class="text-2xl p-2 mt-10 bg-gray-900 text-gray-50 rounded-lg w-2/5">Upload Image</button>
         </div>
+
+        <form id="image-form" action="/recognize" method="post" enctype="multipart/form-data">
+            <input type="file" name="image-data" id="image-data" class="hidden">
+            <div class="border-dotted border-4 mb-2 h-80 rounded-xl flex flex-col items-center justify-center w-full" id="preview-container">
+                <img id="preview-pre-img" class="object-cover h-40" src="{{url_for('static', filename=logo_path~'new_upload.svg')}}">
+            </div>
+            <button type="submit" class="w-full h-12 border text-2xl text-center bg-gray-900 text-gray-50 rounded-lg w-2/5 hover:bg-gray-50 hover:border-gray-700 hover:text-gray-700 border">Recognize</button>
+        </form>
     </div>
+
 </section>
+<hr class="mx-auto container text-gray-700">
 <section class="container w-full mx-auto pb-4">
     <h1 class="py-6 text-2xl font-sans">Popular Birds</h1>
     <div class="container grid grid-cols-4 gap-3">
-        <div class="relative h-96">
-            <img alt="bird_one"
-                 class="rounded-xl drop-shadow h-full w-full object-cover" src="https://cdn.pixabay.com/photo/2014/07/08/12/36/bird-386725_1280.jpg">
-            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
-                Name
+        <form action="/bird_detail" method="get">
+            <input type="hidden" value="{{popu_birds[0]._id}}" name="bird_id">
+            <div class="relative h-96">
+                <img alt="bird_one" onclick="submit()"
+                     class="rounded-xl drop-shadow h-full w-full object-cover hover:opacity-80" src="{{url_for('static', filename='birds_list/'~popu_birds[0].bird_img[0])}}">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50">
+                    {{popu_birds[0].bird_name}}
+                </div>
             </div>
-        </div>
+        </form>
         <div class="container grid grid-rows-5 gap-3 h-96">
-            <div class="row-span-3 relative">
-                <img alt="bird_one"
-                     class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2020/04/30/03/26/hummingbird-5111260_1280.jpg">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
-                    Name
+            <form class="row-span-3 relative" method="get" action="/bird_detail">
+                <input type="hidden" value="{{popu_birds[1]._id}}" name="bird_id">
+                <img alt="bird_one" onclick="submit()"
+                     class="rounded-xl drop-shadow w-full h-full object-cover hover:opacity-80" src="{{url_for('static', filename='birds_list/'~popu_birds[1].bird_img[0])}}">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50">
+                    {{popu_birds[1].bird_name}}
                 </div>
-            </div>
-            <div class="row-span-2 relative">
-                <img alt="bird_one"
-                     class="rounded-xl drop-shadow h-full w-full object-cover" src="https://cdn.pixabay.com/photo/2017/11/30/11/57/barn-owl-2988291_1280.jpg">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
-                    Name
+            </form>
+            <form class="row-span-2 relative" method="get" action="/bird_detail">
+                <input type="hidden" value="{{popu_birds[2]._id}}" name="bird_id">
+                <img alt="bird_one" onclick="submit()"
+                     class="rounded-xl drop-shadow h-full w-full object-cover hover:opacity-80" src="{{url_for('static', filename='birds_list/'~popu_birds[2].bird_img[0])}}">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50">
+                    {{popu_birds[2].bird_name}}
                 </div>
-            </div>
+            </form>
         </div>
-        <div class="relative h-96">
-            <img alt="bird_one"
-                 class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2015/06/21/20/12/peafowl-816981_1280.jpg">
-            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
-                Name
+        <form class="relative h-96" method="get" action="/bird_detail">
+            <input type="hidden" value="{{popu_birds[3]._id}}" name="bird_id">
+            <img alt="bird_one" onclick="submit()"
+                 class="rounded-xl drop-shadow w-full h-full object-cover hover:opacity-80" src="{{url_for('static', filename='birds_list/'~popu_birds[3].bird_img[0])}}">
+            <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50">
+                {{popu_birds[3].bird_name}}
             </div>
-        </div>
+        </form>
         <div class="container grid grid-rows-5 gap-3 h-96">
-            <div class="row-span-2 relative">
-                <img alt="bird_one"
-                     class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2017/02/28/23/00/swan-2107052_1280.jpg">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
-                    Name
+            <form class="row-span-2 relative" method="get" action="/bird_detail">
+                <input type="hidden" value="{{popu_birds[4]._id}}" name="bird_id">
+                <img alt="bird_one" onclick="submit()"
+                     class="rounded-xl drop-shadow w-full h-full object-cover hover:opacity-80" src="{{url_for('static', filename='birds_list/'~popu_birds[4].bird_img[0])}}">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50">
+                    {{popu_birds[4].bird_name}}
                 </div>
-            </div>
-            <div class="row-span-3 relative">
-                <img alt="bird_one"
-                     class="rounded-xl drop-shadow w-full h-full object-cover" src="https://cdn.pixabay.com/photo/2019/03/28/18/13/bird-4087736_1280.jpg">
-                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50"> Bird
-                    Name
+            </form>
+            <form class="row-span-3 relative" method="get" action="/bird_detail">
+                <input type="hidden" value="{{popu_birds[5]._id}}" name="bird_id">
+                <img alt="bird_one" onclick="submit()"
+                     class="rounded-xl drop-shadow w-full h-full object-cover hover:opacity-80" src="{{url_for('static', filename='birds_list/'~popu_birds[5].bird_img[0])}}">
+                <div class="absolute bottom-0 left-0 p-2 px-2.5 m-4 rounded-2xl text-xs bg-gray-900 text-gray-50">
+                    {{popu_birds[5].bird_name}}
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </section>
@@ -139,4 +171,66 @@
         {% endfor %}
     </div>
 </section>
+<script>
+
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const previewContainer = document.getElementById('preview-container');
+    const imageDataInput = document.getElementById('image-data');
+
+    dropArea.addEventListener('dragover', function(event) {
+        event.preventDefault();
+        dropArea.classList.add('border-blue-500');
+    });
+
+    dropArea.addEventListener('dragleave', function(event) {
+        dropArea.classList.remove('border-blue-500');
+    });
+
+    dropArea.addEventListener('drop', function(event) {
+        event.preventDefault();
+        dropArea.classList.remove('border-blue-500');
+
+        const files = event.dataTransfer.files;
+        // Ensure only one file is handled
+        const file = files[0];
+        handleFile(file);
+    });
+
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        handleFile(file);
+    });
+
+    document.addEventListener('paste', function(event) {
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        for (const item of items) {
+        if (item.kind === 'file') {
+            const blob = item.getAsFile();
+            const file = new File([blob], 'pasted-image.png', { type: blob.type });
+            handleFile(file);
+            break; // Stop after handling the first file
+        }
+      }
+    });
+
+    function handleFile(file) {
+        if (file.type.startsWith('image/')) {
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+              // Clear existing previews
+                previewContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.classList.add( 'h-full', 'object-cover', 'm-2');
+                img.src = event.target.result;
+                console.log(event.target.result)
+                previewContainer.appendChild(img);
+
+                imageDataInput.value = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 {% endblock %}

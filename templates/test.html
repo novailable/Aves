@@ -1,27 +1,78 @@
-<div class="pl-4 w-full">
-                <div class="flex flex-col gap-1 pb-3">
-                    <p class="">Name: <input type="text" value="{{bird['bird_name']}}" class="border border-gray-400 rounded-md w-max ml-2 pl-1 h-6" ></p>
-                    <p>Scientific Name - {{bird['bird_sci_name']}}</p>
-                    <p>Order - {{bird['bird_order']}}</p>
-                    <p>Family - {{bird['bird_family']}}</p>
-                    <div id="bird-colors" class="w">Color -
-                        {% for b_color in bird['bird_color'] %}
-                            <div class="center relative inline-block select-none
-                                        whitespace-nowrap rounded-lg py-1 px-2.5 align-baseline font-sans leading-none"
-                                 style="background: {{b_color[1]}};" data-color-code="{{b_color[1]}}">
-                                {{b_color[0]}}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <p>Habitat - {% for b_habitat in bird['bird_habitat'] %}{{b_habitat}}{% endfor %}</p>
-                </div>
-                <hr class="w-full">
-                <div class="text-base pt-2">
-                    <p class="text-xl">Biometric Features</p>
-                    <div class="pl-4 pt-1">
-                        <p>Size - {{bird['bird_char']['size']}}</p>
-                        <p>Wing - {{bird['bird_char']['wing']}}</p>
-                        <p>Weight - {{bird['bird_char']['weight']}}</p>
-                    </div>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Upload</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto p-4">
+  <div id="drop-area" class="border-2 border-dashed border-gray-400 py-12 text-center cursor-pointer">
+    <p class="text-gray-600">Drop files here or click to upload.</p>
+    <input type="file" id="file-input" multiple class="hidden">
+  </div>
+
+  <div id="preview-container" class="flex flex-wrap mt-4"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const previewContainer = document.getElementById('preview-container');
+
+    dropArea.addEventListener('dragover', function(event) {
+      event.preventDefault();
+      dropArea.classList.add('border-blue-500');
+    });
+
+    dropArea.addEventListener('dragleave', function(event) {
+      dropArea.classList.remove('border-blue-500');
+    });
+
+    dropArea.addEventListener('drop', function(event) {
+      event.preventDefault();
+      dropArea.classList.remove('border-blue-500');
+
+      const files = event.dataTransfer.files;
+      // Ensure only one file is handled
+      const file = files[0];
+      handleFile(file);
+    });
+
+    fileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      handleFile(file);
+    });
+
+    document.addEventListener('paste', function(event) {
+      const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (const item of items) {
+        if (item.kind === 'file') {
+          const blob = item.getAsFile();
+          const file = new File([blob], 'pasted-image.png', { type: blob.type });
+          handleFile(file);
+          break; // Stop after handling the first file
+        }
+      }
+    });
+
+    function handleFile(file) {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          // Clear existing previews
+          previewContainer.innerHTML = '';
+          const img = document.createElement('img');
+          img.classList.add('w-48', 'h-48', 'object-cover', 'm-2');
+          img.src = event.target.result;
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+</script>
+</body>
+</html>

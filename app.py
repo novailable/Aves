@@ -15,18 +15,25 @@ con = DBCon(app)
 
 @app.route('/')
 def index():
-    birds = con.load_data(con.get_birds()).to_dict(orient='records')
-    for bird in birds:
-        bird['_id'] = str(bird['_id'])
 
-    bird = con.search_bird({"_id": ObjectId("65b767bd0418ddceb0fcb308")})
-
+    popu_birds = con.get_popular_birds().to_dict('records')
+    birds = con.get_bird_cols({}, {'_id': 1, 'bird_name': 1, 'bird_img':1}).to_dict('records')
     # print(birds)
-    return render_template("index.html", active_page='home', birds=birds, bird=bird)
+    return render_template("index.html", active_page='home', popu_birds=popu_birds, birds=birds)
+
+@app.route('/recognize', methods=['POST', 'GET'])
+def recognize():
+    if 'image' in request.files:
+        image = request.files['image-data']
+        # Do something with the image, like save it to disk or process it
+        image.save('uploaded_image.png')
+        return 'Image uploaded successfully.'
+    else:
+        return 'No image found in request.'
 
 
-@app.route('/map')
-def map():
+@app.route('/watchmap')
+def watchmap():
     API, map_id = g_map.get_API_ID()
     return render_template("map.html", API=API, map_id=map_id, active_page='map')
 
@@ -98,17 +105,20 @@ def explore():
 def bird_detail():
     bird_id = request.args.get('bird_id')
     bird = con.search_bird({"_id": ObjectId(bird_id)})
+    con.update_bird_popularity(ObjectId(bird_id))
 
     return render_template("detail.html", bird=bird)
 
 
 @app.route('/compare')
 def compare():
+
     bird1_id = request.args.get('bird1_id')
     bird2_id = request.args.get('bird2_id')
     bird1 = con.search_bird({"_id": ObjectId(bird1_id)})
     bird2 = con.search_bird({"_id": ObjectId(bird2_id)})
-
+    con.update_bird_popularity(ObjectId(bird1_id))
+    con.update_bird_popularity(ObjectId(bird2_id))
     return render_template('compare.html', bird1=bird1, bird2=bird2)
 
 

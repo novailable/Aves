@@ -18,9 +18,9 @@ import googlemaps
 class geo_map():
 
     def __init__(self):
-        self.__API = "AIzaSyBVaeNch_aeLuTOIVX75orHHF0z7eeGlJI"
+        self.__API = "Google Map API key"
         self.__gmaps = googlemaps.Client(key=self.__API)
-        self.__map_id = '16d8ab4a81eec419'
+        self.__map_id = 'map_id'
 
     def get_API_ID(self):
         return self.__API, self.__map_id
